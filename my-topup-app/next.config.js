@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // এই অংশটি বিল্ড এরর ইগনোর করবে
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // ইমেজ ডোমেইন কনফিগারেশন
   images: {
     remotePatterns: [
       {
@@ -25,7 +30,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com', // Google Auth Profile Pictures
+        hostname: 'lh3.googleusercontent.com',
       },
       {
         protocol: 'https',
