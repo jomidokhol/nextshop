@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RING.BD - Premium Earning</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00bf8f; /* Ring BD Green */
+            --dark-green: #008f6b;
+            --secondary: #2c3e50;
+            --accent: #f1c40f;
+            --bg: #f0f2f5;
+            --text: #333;
+            --white: #ffffff;
+            --admin-bg: #2d3436;
+        }
+
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; outline: none; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; user-select: none; }
+
+        /* --- UI COMPONENTS --- */
+        .hidden { display: none !important; }
+        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; font-size: 1rem; margin-top: 10px; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark-green)); color: white; box-shadow: 0 4px 15px rgba(0,191,143,0.3); }
+        .btn-danger { background: #ff4757; color: white; }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #666; font-weight: 600; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 1rem; }
+
+        /* --- LAYOUT --- */
+        .screen { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); overflow-x: hidden; }
+        .header { background: var(--secondary); color: white; padding: 25px 20px 40px 20px; border-radius: 0 0 25px 25px; position: relative; }
+        .header h2 { font-size: 1.5rem; }
+        .balance-card { background: linear-gradient(135deg, var(--primary), #00a8ff); color: white; padding: 20px; margin: -30px 20px 20px 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,191,143,0.2); text-align: center; position: relative; z-index: 10; }
+        
+        .content { padding: 0 20px; }
+        .scroll-content { height: calc(100vh - 140px); overflow-y: auto; padding-bottom: 20px; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .nav-item { text-align: center; color: #999; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 3px; display: block; }
+        .nav-item span { font-size: 0.7rem; font-weight: 600; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+
+        /* --- GAME & TASK --- */
+        .task-card { background: white; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .game-wheel { width: 200px; height: 200px; background: conic-gradient(red 0deg 60deg, yellow 60deg 120deg, blue 120deg 180deg, green 180deg 240deg, orange 240deg 300deg, purple 300deg 360deg); border-radius: 50%; margin: 20px auto; border: 5px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.2); position: relative; transition: transform 3s ease-out; }
+        .wheel-marker { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--secondary); z-index: 5; }
+        
+        /* --- ADMIN --- */
+        .admin-panel { background: #f4f6f7; min-height: 100vh; }
+        .admin-header { background: var(--secondary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-tab-btn { padding: 8px 15px; background: #ddd; border: none; border-radius: 20px; font-size: 0.8rem; margin-right: 5px; cursor: pointer; }
+        .admin-tab-btn.active { background: var(--primary); color: white; }
+        .req-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; border-left: 4px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="screen">
+    
+    <!-- === LOADING OVERLAY === -->
+    <div id="loader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <div style="text-align:center;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary);"></i>
+            <p style="margin-top:10px;">Loading RING.BD...</p>
+        </div>
+    </div>
+
+    <!-- === 1. AUTH SCREENS === -->
+    
+    <!-- Login -->
+    <div id="view-login" class="hidden">
+        <div class="header" style="text-align: center; border-radius: 0 0 50% 50%; padding-bottom: 60px;">
+            <i class="fas fa-fingerprint" style="font-size: 3rem; margin-bottom: 10px;"></i>
+            <h1>RING.BD</h1>
+        </div>
+        <div class="content" style="margin-top: 30px;">
+            <div class="input-group">
+                <label>User ID</label>
+                <input type="text" id="login-id" placeholder="Ex: RING402">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="login-pass">
+            </div>
+            <button class="btn btn-primary" onclick="app.login()">Login Now</button>
+            <button class="btn btn-outline" onclick="nav.to('register')">Create Account</button>
+            
+            <p style="text-align:center; margin-top:30px; font-size:0.8rem; color:#aaa; cursor:pointer;" onclick="nav.to('admin-login')">Admin Access</p>
+        </div>
+    </div>
+
+    <!-- Admin Login -->
+    <div id="view-admin-login" class="hidden">
+        <div class="header"><h2>Admin Security</h2></div>
+        <div class="content" style="margin-top:20px;">
+            <div class="input-group">
+                <label>Admin Password</label>
+                <input type="password" id="admin-pass">
+            </div>
+            <button class="btn btn-secondary" style="background:#333; color:white;" onclick="admin.login()">Access Panel</button>
+            <button class="btn btn-outline" onclick="nav.to('login')">Back to User Login</button>
+        </div>
+    </div>
+
+    <!-- Register -->
+    <div id="view-register" class="hidden">
+        <div class="header"><h2>Registration</h2></div>
+        <div class="scroll-content">
+            <div class="content" style="margin-top: 20px;">
+                <div class="input-group"><label>Full Name (NID Match)</label><input type="text" id="reg-name"></div>
+                <div class="input-group"><label>Age (18+)</label><input type="number" id="reg-age"></div>
+                <div class="input-group"><label>Mobile (+880)</label><input type="number" id="reg-mobile"></div>
+                <div class="input-group"><label>Email</label><input type="email" id="reg-email"></div>
+                <div class="input-group"><label>Address</label><input type="text" id="reg-address"> <button class="btn btn-outline" style="padding:5px; margin-top:5px; font-size:0.8rem;" onclick="window.open('https://maps.google.com')">Open Maps</button></div>
+                
+                <div class="input-group">
+                    <label>Select Package</label>
+                    <select id="reg-amount">
+                        <option value="3000">Starter - 3,000 ৳</option>
+                        <option value="5000">Basic - 5,000 ৳</option>
+                        <option value="13000">Pro - 13,000 ৳</option>
+                        <option value="49000">Elite - 49,000 ৳</option>
+                        <option value="78000">Master - 78,000 ৳</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Payment Method</label>
+                    <select id="reg-gateway" onchange="app.toggleGateway()">
+                        <option value="">Select Gateway</option>
+                        <option value="Ton">Ton (Crypto)</option>
+                        <option value="Crypt">USDT/Crypt</option>
+                        <option value="Bkash">Bkash (Manual)</option>
+                    </select>
+                </div>
+
+                <div id="gateway-info" class="hidden" style="background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:15px; border:1px dashed #ccc;">
+                    <p style="font-size:0.8rem; color:red;">Send Money To:</p>
+                    <h4 id="display-payment-number" style="letter-spacing:1px;">Loading...</h4>
+                    <small>Copy the number/address above.</small>
+                    <div class="input-group" style="margin-top:10px;">
+                        <label>Transaction ID (TrxID)</label>
+                        <input type="text" id="reg-trx" placeholder="Paste TrxID">
+                    </div>
+                </div>
+
+                <div class="input-group" style="display:flex; gap:10px;">
+                    <input type="checkbox" id="reg-terms" style="width:20px;">
+                    <label style="margin:0; font-size:0.8rem;">I agree to Terms & Conditions.</label>
+                </div>
+
+                <button class="btn btn-primary" onclick="app.register()">Submit Request</button>
+                <button class="btn btn-outline" onclick="nav.to('login')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- === 2. USER DASHBOARD PAGES === -->
+    
+    <!-- Home Tab -->
+    <div id="view-home" class="hidden">
+        <div class="header" style="display:flex; justify-content:space-between;">
+            <div>
+                <h3>Hello, <span class="u-name">User</span></h3>
+                <p style="font-size:0.8rem; opacity:0.8;">Welcome to RING.BD</p>
+            </div>
+            <div style="background:white; color:var(--primary); width:40px; height:40px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold;">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="balance-card">
+            <p style="font-size:0.9rem;">Total Balance</p>
+            <h1 style="font-size:2.5rem;">৳ <span id="u-balance">0.00</span></h1>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:rgba(255,255,255,0.2); color:white; width:auto; padding:5px 15px;" onclick="nav.to('withdraw')">Withdraw</button>
+                <button class="btn" style="background:rgba(255,255,255,0.2); color:white; width:auto; padding:5px 15px;" onclick="alert('Contact Admin to Deposit more')">Deposit</button>
+            </div>
+        </div>
+
+        <div class="content" style="padding-bottom:100px;">
+            <!-- Marquee Notice -->
+            <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 20px; white-space: nowrap; overflow: hidden; display: flex;">
+                <span id="site-notice-marquee" style="animation: scroll 10s linear infinite;">Welcome to RING.BD! Start earning today.</span>
+            </div>
+            <style> @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-150%); } } </style>
+
+            <h3 style="margin-bottom:10px;">Dashboard</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div class="task-card" style="display:block; text-align:center; cursor:pointer;" onclick="nav.bottom('game')">
+                    <i class="fas fa-gamepad" style="font-size:2rem; color:purple; margin-bottom:5px;"></i>
+                    <h4>Play Game</h4>
+                </div>
+                <div class="task-card" style="display:block; text-align:center; cursor:pointer;" onclick="nav.bottom('task')">
+                    <i class="fas fa-tasks" style="font-size:2rem; color:orange; margin-bottom:5px;"></i>
+                    <h4>Daily Task</h4>
+                </div>
+                <div class="task-card" style="display:block; text-align:center; cursor:pointer;" onclick="app.copyLink()">
+                    <i class="fas fa-share-alt" style="font-size:2rem; color:blue; margin-bottom:5px;"></i>
+                    <h4>Refer Link</h4>
+                </div>
+                <div class="task-card" style="display:block; text-align:center; cursor:pointer;" onclick="window.open('https://t.me/ringbd_support')">
+                    <i class="fab fa-telegram" style="font-size:2rem; color:#0088cc; margin-bottom:5px;"></i>
+                    <h4>Support</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Tab -->
+    <div id="view-game" class="hidden">
+        <div class="header"><h2>Lucky Spin</h2></div>
+        <div class="content" style="text-align:center; padding-top:20px;">
+            <p>Cost per spin: <b id="game-cost-display">20</b> ৳</p>
+            <div style="position:relative;">
+                <div class="wheel-marker"></div>
+                <div class="game-wheel" id="wheel"></div>
+            </div>
+            <button class="btn btn-primary" onclick="app.playGame()">SPIN NOW</button>
+            <p style="margin-top:10px; font-size:0.8rem; color:#777;">Win up to 100 ৳ instantly!</p>
+        </div>
+    </div>
+
+    <!-- Task Tab -->
+    <div id="view-task" class="hidden">
+        <div class="header"><h2>Daily Tasks</h2></div>
+        <div class="content" style="padding-top:20px;" id="task-list-container">
+            <!-- Dynamic Tasks -->
+            <div class="task-card">
+                <div>
+                    <h4>Watch Ad 1</h4>
+                    <small>Reward: <span class="task-reward">5</span> ৳</small>
+                </div>
+                <button class="btn btn-primary" style="width:80px;" onclick="app.doTask(1)">Claim</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="view-profile" class="hidden">
+        <div class="header" style="text-align:center;">
+            <div style="width:80px; height:80px; background:white; border-radius:50%; margin:0 auto; display:flex; justify-content:center; align-items:center; color:var(--secondary); font-size:2.5rem;"><i class="fas fa-user-circle"></i></div>
+            <h2 class="u-name" style="margin-top:10px;">User Name</h2>
+            <p class="u-id">ID: --</p>
+        </div>
+        <div class="scroll-content" style="padding-top:20px;">
+            <div class="content">
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="text" id="p-mobile" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="text" id="p-email" readonly>
+                </div>
+                <div class="input-group">
+                    <label>My Deposit Package</label>
+                    <input type="text" id="p-deposit" readonly>
+                </div>
+                <button class="btn btn-danger" onclick="app.logout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Page -->
+    <div id="view-withdraw" class="hidden">
+        <div class="header">
+            <button onclick="nav.bottom('home')" style="background:none; border:none; color:white; font-size:1.2rem; float:left;"><i class="fas fa-arrow-left"></i></button>
+            <h2 style="display:inline-block; margin-left:10px;">Withdraw</h2>
+        </div>
+        <div class="content" style="margin-top:20px;">
+            <div class="balance-card" style="margin: 0 0 20px 0;">
+                <p>Available Balance</p>
+                <h2>৳ <span id="w-balance">0.00</span></h2>
+            </div>
+            
+            <div class="input-group">
+                <label>Method</label>
+                <select id="w-method">
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Binance">Binance (USDT)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Wallet Number / Address</label>
+                <input type="text" id="w-number" placeholder="017...">
+            </div>
+            <div class="input-group">
+                <label>Amount (Min: <span id="min-withdraw-display">500</span> ৳)</label>
+                <input type="number" id="w-amount">
+            </div>
+
+            <button class="btn btn-primary" onclick="app.submitWithdraw()">Confirm Withdraw</button>
+        </div>
+    </div>
+
+    <!-- === 3. BOTTOM NAVIGATION === -->
+    <div class="bottom-nav hidden" id="main-nav">
+        <div class="nav-item active" id="nav-home" onclick="nav.bottom('home')">
+            <i class="fas fa-home"></i> <span>Home</span>
+        </div>
+        <div class="nav-item" id="nav-game" onclick="nav.bottom('game')">
+            <i class="fas fa-gamepad"></i> <span>Game</span>
+        </div>
+        <div class="nav-item" id="nav-task" onclick="nav.bottom('task')">
+            <i class="fas fa-clipboard-check"></i> <span>Task</span>
+        </div>
+        <div class="nav-item" id="nav-profile" onclick="nav.bottom('profile')">
+            <i class="fas fa-user"></i> <span>Profile</span>
+        </div>
+    </div>
+
+    <!-- === 4. ADMIN PANEL === -->
+    <div id="view-admin" class="hidden admin-panel">
+        <div class="admin-header">
+            <h3>Admin Panel</h3>
+            <button onclick="app.logout()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">Exit</button>
+        </div>
+        <div style="padding:10px; background:white; overflow-x:auto; white-space:nowrap;">
+            <button class="admin-tab-btn active" onclick="admin.tab('req')">Registrations</button>
+            <button class="admin-tab-btn" onclick="admin.tab('with')">Withdrawals</button>
+            <button class="admin-tab-btn" onclick="admin.tab('set')">Site Settings</button>
+        </div>
+
+        <div class="content scroll-content" style="padding-top:15px;">
+            
+            <!-- Registrations List -->
+            <div id="adm-tab-req">
+                <h4>Pending Registrations</h4>
+                <div id="list-registrations">Loading...</div>
+            </div>
+
+            <!-- Withdrawals List -->
+            <div id="adm-tab-with" class="hidden">
+                <h4>Pending Withdrawals</h4>
+                <div id="list-withdrawals">Loading...</div>
+            </div>
+
+            <!-- Settings -->
+            <div id="adm-tab-set" class="hidden">
+                <h4>Site Customization</h4>
+                
+                <div class="input-group">
+                    <label>Homepage Notice (Marquee)</label>
+                    <input type="text" id="set-notice">
+                </div>
+                
+                <div class="input-group">
+                    <label>Task Reward Amount (৳)</label>
+                    <input type="number" id="set-task-reward">
+                </div>
+
+                <div class="input-group">
+                    <label>Game Cost (৳)</label>
+                    <input type="number" id="set-game-cost">
+                </div>
+
+                <div class="input-group">
+                    <label>Minimum Withdraw (৳)</label>
+                    <input type="number" id="set-min-withdraw">
+                </div>
+
+                <div class="input-group">
+                    <label>Payment Address (Ton/Bkash Info)</label>
+                    <textarea id="set-pay-info" rows="3"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="admin.saveSettings()">Save Changes</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    /** 
+     * IMPORTANT: Replace with your Firebase Config 
+     * Get this from: https://console.firebase.google.com/
+     */
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY_HERE",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "12345",
+        appId: "1:12345:web:abcde"
+    };
+
+    // Init Firebase
+    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // --- STATE MANAGEMENT ---
+    let currentUser = null;
+    let siteSettings = {
+        notice: "Welcome to Ring BD",
+        taskReward: 5,
+        gameCost: 20,
+        minWithdraw: 500,
+        paymentInfo: "01700000000 (Bkash Personal)"
+    };
+
+    // --- NAVIGATION CONTROLLER ---
+    const nav = {
+        to: (viewId) => {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            
+            // Hide bottom nav for auth pages
+            if(viewId === 'login' || viewId === 'register' || viewId === 'admin' || viewId === 'admin-login') {
+                document.getElementById('main-nav').classList.add('hidden');
+            }
+        },
+        bottom: (tabId) => {
+            // Only switch between home, game, task, profile
+            ['home', 'game', 'task', 'profile'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).classList.remove('active');
+            });
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).classList.add('active');
+            document.getElementById('main-nav').classList.remove('hidden');
+        }
+    };
+
+    // --- APP LOGIC ---
+    const app = {
+        init: () => {
+            document.getElementById('loader').classList.remove('hidden');
+            // Load settings first
+            db.ref('settings').on('value', snap => {
+                if(snap.exists()) {
+                    siteSettings = snap.val();
+                    app.applySettings();
+                }
+                document.getElementById('loader').classList.add('hidden');
+            });
+            nav.to('login');
+        },
+        
+        applySettings: () => {
+            // Update UI based on admin settings
+            document.getElementById('site-notice-marquee').innerText = siteSettings.notice;
+            document.getElementById('game-cost-display').innerText = siteSettings.gameCost;
+            document.getElementById('min-withdraw-display').innerText = siteSettings.minWithdraw;
+            document.querySelectorAll('.task-reward').forEach(el => el.innerText = siteSettings.taskReward);
+            
+            // Admin inputs fill
+            document.getElementById('set-notice').value = siteSettings.notice;
+            document.getElementById('set-task-reward').value = siteSettings.taskReward;
+            document.getElementById('set-game-cost').value = siteSettings.gameCost;
+            document.getElementById('set-min-withdraw').value = siteSettings.minWithdraw;
+            document.getElementById('set-pay-info').value = siteSettings.paymentInfo;
+        },
+
+        toggleGateway: () => {
+            const gw = document.getElementById('reg-gateway').value;
+            const infoBox = document.getElementById('gateway-info');
+            if(gw) {
+                infoBox.classList.remove('hidden');
+                document.getElementById('display-payment-number').innerText = siteSettings.paymentInfo;
+            } else {
+                infoBox.classList.add('hidden');
+            }
+        },
+
+        register: () => {
+            const data = {
+                name: document.getElementById('reg-name').value,
+                age: document.getElementById('reg-age').value,
+                mobile: "+880" + document.getElementById('reg-mobile').value,
+                email: document.getElementById('reg-email').value,
+                address: document.getElementById('reg-address').value,
+                amount: parseInt(document.getElementById('reg-amount').value),
+                gateway: document.getElementById('reg-gateway').value,
+                trx: document.getElementById('reg-trx').value,
+                status: 'pending',
+                date: new Date().toISOString()
+            };
+
+            if(!data.name || !data.mobile || !data.trx) return alert("Fill all fields");
+            if(data.age < 18) return alert("Must be 18+");
+            if(!document.getElementById('reg-terms').checked) return alert("Accept terms");
+
+            db.ref('registrations').push(data).then(() => {
+                alert("Request Sent! Admin will email your ID/Pass shortly.");
+                nav.to('login');
+            });
+        },
+
+        login: () => {
+            const id = document.getElementById('login-id').value;
+            const pass = document.getElementById('login-pass').value;
+            
+            db.ref('users/' + id).once('value', snap => {
+                if(snap.exists() && snap.val().password === pass) {
+                    currentUser = snap.val();
+                    currentUser.id = id;
+                    app.loadUserDashboard();
+                } else {
+                    alert("Invalid Credentials");
+                }
+            });
+        },
+
+        loadUserDashboard: () => {
+            // Setup User Data Listeners
+            db.ref('users/' + currentUser.id).on('value', snap => {
+                currentUser = snap.val();
+                currentUser.id = snap.key;
+                
+                // Update text
+                document.querySelectorAll('.u-name').forEach(el => el.innerText = currentUser.name);
+                document.querySelectorAll('.u-id').forEach(el => el.innerText = "ID: " + currentUser.id);
+                document.getElementById('u-balance').innerText = currentUser.balance.toFixed(2);
+                document.getElementById('w-balance').innerText = currentUser.balance.toFixed(2);
+                
+                // Profile inputs
+                document.getElementById('p-mobile').value = currentUser.mobile;
+                document.getElementById('p-email').value = currentUser.email;
+                document.getElementById('p-deposit').value = currentUser.depositAmount + " ৳";
+            });
+
+            nav.bottom('home');
+        },
+
+        playGame: () => {
+            if(currentUser.balance < siteSettings.gameCost) return alert("Insufficient Balance");
+            
+            // Deduct cost
+            db.ref('users/' + currentUser.id).update({
+                balance: currentUser.balance - parseInt(siteSettings.gameCost)
+            });
+
+            // Spin Animation
+            const wheel = document.getElementById('wheel');
+            const deg = Math.floor(1000 + Math.random() * 3000);
+            wheel.style.transform = `rotate(${deg}deg)`;
+
+            setTimeout(() => {
+                // Calculate Reward (Logic: 30% chance to win double, 70% lose/small)
+                const win = Math.random() > 0.6 ? 50 : 5;
+                alert(`You Won ${win} ৳!`);
+                db.ref('users/' + currentUser.id).update({
+                    balance: (currentUser.balance - parseInt(siteSettings.gameCost)) + win
+                });
+                wheel.style.transition = 'none';
+                wheel.style.transform = 'rotate(0deg)';
+                setTimeout(() => wheel.style.transition = 'transform 3s ease-out', 50);
+            }, 3000);
+        },
+
+        doTask: (taskId) => {
+            const btn = event.target;
+            btn.innerText = "Wait 3s...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const reward = parseInt(siteSettings.taskReward);
+                db.ref('users/' + currentUser.id).update({
+                    balance: currentUser.balance + reward
+                });
+                alert("Task Complete! Reward added.");
+                btn.innerText = "Done";
+            }, 3000);
+        },
+
+        submitWithdraw: () => {
+            const amount = parseInt(document.getElementById('w-amount').value);
+            const method = document.getElementById('w-method').value;
+            const number = document.getElementById('w-number').value;
+
+            if(amount < siteSettings.minWithdraw) return alert(`Minimum withdraw is ${siteSettings.minWithdraw}`);
+            if(amount > currentUser.balance) return alert("Insufficient Balance");
+            if(!number) return alert("Enter Wallet Number");
+
+            // Deduct Balance immediately
+            db.ref('users/' + currentUser.id).update({
+                balance: currentUser.balance - amount
+            });
+
+            // Create Request
+            db.ref('withdrawals').push({
+                userId: currentUser.id,
+                name: currentUser.name,
+                amount: amount,
+                method: method,
+                number: number,
+                status: 'pending',
+                date: new Date().toISOString()
+            }).then(() => {
+                alert("Withdrawal Request Sent!");
+                nav.bottom('home');
+            });
+        },
+
+        copyLink: () => {
+            const link = "https://ring.bd/reg?ref=" + currentUser.id;
+            navigator.clipboard.writeText(link).then(() => alert("Referral Link Copied!"));
+        },
+
+        logout: () => {
+            currentUser = null;
+            // Detach listeners usually, but simple reload works
+            location.reload();
+        }
+    };
+
+    // --- ADMIN LOGIC ---
+    const admin = {
+        login: () => {
+            const p = document.getElementById('admin-pass').value;
+            if(p === 'admin123') { // Simple check
+                nav.to('admin');
+                admin.loadData();
+            } else {
+                alert("Wrong Admin Password");
+            }
+        },
+
+        tab: (t) => {
+            document.querySelectorAll('[id^="adm-tab-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('adm-tab-' + t).classList.remove('hidden');
+            event.target.classList.add('active');
+        },
+
+        loadData: () => {
+            // Load Registrations
+            db.ref('registrations').orderByChild('status').equalTo('pending').on('value', snap => {
+                const list = document.getElementById('list-registrations');
+                list.innerHTML = "";
+                if(!snap.exists()) return list.innerHTML = "<p>No pending requests.</p>";
+                
+                snap.forEach(c => {
+                    const d = c.val();
+                    const k = c.key;
+                    list.innerHTML += `
+                        <div class="req-card">
+                            <b>${d.name}</b><br>
+                            Pk: ${d.amount}৳ | Trx: ${d.trx}<br>
+                            <button class="btn btn-primary" style="width:auto; padding:5px 10px; font-size:0.8rem;" onclick="admin.approveReg('${k}', '${d.name}', '${d.email}', ${d.amount}, '${d.mobile}')">Approve</button>
+                            <button class="btn btn-danger" style="width:auto; padding:5px 10px; font-size:0.8rem;" onclick="admin.reject('registrations', '${k}')">Reject</button>
+                        </div>
+                    `;
+                });
+            });
+
+            // Load Withdrawals
+            db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', snap => {
+                const list = document.getElementById('list-withdrawals');
+                list.innerHTML = "";
+                if(!snap.exists()) return list.innerHTML = "<p>No pending withdrawals.</p>";
+
+                snap.forEach(c => {
+                    const d = c.val();
+                    const k = c.key;
+                    list.innerHTML += `
+                        <div class="req-card" style="border-color:orange;">
+                            <b>${d.name}</b> (ID: ${d.userId})<br>
+                            Method: ${d.method} -> ${d.number}<br>
+                            Amount: <b>${d.amount} ৳</b><br>
+                            <button class="btn btn-primary" style="width:auto; padding:5px 10px; font-size:0.8rem;" onclick="admin.approveWith('${k}')">Mark Paid</button>
+                            <button class="btn btn-danger" style="width:auto; padding:5px 10px; font-size:0.8rem;" onclick="admin.rejectWith('${k}', '${d.userId}', ${d.amount})">Refund & Reject</button>
+                        </div>
+                    `;
+                });
+            });
+        },
+
+        approveReg: (key, name, email, deposit, mobile) => {
+            const uid = "RING" + Math.floor(1000 + Math.random() * 9000);
+            const pass = Math.random().toString(36).slice(-6);
+            
+            db.ref('users/' + uid).set({
+                name: name,
+                email: email,
+                mobile: mobile,
+                password: pass,
+                depositAmount: deposit,
+                balance: 50, // Welcome Bonus
+                totalWithdraw: 0
+            });
+            db.ref('registrations/' + key).update({ status: 'approved' });
+            alert(`User Created!\n\nID: ${uid}\nPass: ${pass}\n\n(Send this to user)`);
+        },
+
+        approveWith: (key) => {
+            db.ref('withdrawals/' + key).update({ status: 'paid' });
+            alert("Marked as Paid");
+        },
+
+        rejectWith: (key, uid, amount) => {
+            // Refund balance
+            db.ref('users/' + uid).once('value', s => {
+                const bal = s.val().balance;
+                db.ref('users/' + uid).update({ balance: bal + amount });
+            });
+            db.ref('withdrawals/' + key).update({ status: 'rejected' });
+        },
+
+        reject: (node, key) => {
+            if(confirm("Delete this request?")) db.ref(node + '/' + key).remove();
+        },
+
+        saveSettings: () => {
+            db.ref('settings').set({
+                notice: document.getElementById('set-notice').value,
+                taskReward: document.getElementById('set-task-reward').value,
+                gameCost: document.getElementById('set-game-cost').value,
+                minWithdraw: document.getElementById('set-min-withdraw').value,
+                paymentInfo: document.getElementById('set-pay-info').value
+            });
+            alert("Settings Saved!");
+        }
+    };
+
+    // Run
+    window.onload = app.init;
+
+</script>
+</body>
+</html>
