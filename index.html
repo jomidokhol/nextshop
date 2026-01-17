@@ -3,568 +3,643 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RING.BD - Official Earning Site</title>
-    <!-- FontAwesome & Google Fonts -->
+    <title>RING.BD - Premium Earning</title>
+    <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* --- OLD THEME COLORS (Restored) --- */
-            --primary: #00bf8f; 
-            --primary-dark: #008f6b;
-            --secondary: #2c3e50;
-            --accent: #f1c40f;
-            --bg: #f0f2f5;
-            --white: #ffffff;
-            --text: #333333;
-            --danger: #ff4757;
+            --primary: #00e676; /* Bright Green */
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #ffffff;
+            --text-muted: #b0b0b0;
+            --gradient: linear-gradient(135deg, #00e676, #00a859);
+            --shadow: 0 10px 30px rgba(0, 230, 118, 0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; user-select: none; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 90px; user-select: none; }
 
-        /* --- UTILS --- */
+        /* --- NEW LOADER ANIMATION --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .ring-spinner {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 4px solid transparent; border-top-color: var(--primary);
+            animation: spin 1s linear infinite; position: relative;
+        }
+        .ring-spinner:before {
+            content: ""; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border-radius: 50%; border: 4px solid transparent; border-top-color: #fff;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-text { margin-top: 20px; font-weight: 600; letter-spacing: 2px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* --- UTILITIES --- */
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; font-size: 1rem; margin-top: 10px; color: white; }
-        .btn:active { transform: scale(0.96); }
-        .btn-primary { background: var(--primary); box-shadow: 0 4px 10px rgba(0,191,143,0.3); }
-        .btn-secondary { background: var(--secondary); }
-        .btn-danger { background: var(--danger); }
-        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
-        
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #666; font-weight: 600; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 1rem; }
-        .input-group input:focus { border-color: var(--primary); }
+        .btn { border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 15px; transition: 0.3s; }
+        .btn-primary { background: var(--gradient); color: #000; box-shadow: var(--shadow); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); }
+
+        .input-box { margin-bottom: 15px; position: relative; }
+        .input-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .input-box input, .input-box select { 
+            width: 100%; padding: 15px 15px 15px 45px; border-radius: 12px; 
+            border: 1px solid #333; background: #252525; color: white; font-size: 0.95rem;
+        }
+        .input-box label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); }
 
         /* --- LAYOUT --- */
-        .screen { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-        .header { background: var(--secondary); color: white; padding: 25px 20px 50px 20px; border-radius: 0 0 25px 25px; position: relative; display: flex; justify-content: space-between; align-items: center; }
+        .screen { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; overflow-x: hidden; }
+        .header { padding: 30px 20px; background: linear-gradient(180deg, rgba(0,230,118,0.1) 0%, rgba(18,18,18,0) 100%); display: flex; justify-content: space-between; align-items: center; }
         
-        .balance-card { background: white; color: var(--text); padding: 20px; margin: -35px 20px 20px 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; position: relative; z-index: 10; border-top: 5px solid var(--primary); }
+        /* --- CARDS --- */
+        .card { background: var(--bg-card); padding: 20px; border-radius: 20px; margin: 10px 20px; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .balance-card { 
+            background: linear-gradient(135deg, #2c3e50, #000000); 
+            color: white; padding: 25px; border-radius: 20px; margin: 0 20px 20px 20px; 
+            position: relative; overflow: hidden; border: 1px solid #444;
+        }
+        .balance-card::after {
+            content: ""; position: absolute; right: -20px; top: -20px; width: 100px; height: 100px;
+            background: var(--primary); filter: blur(60px); opacity: 0.3;
+        }
 
-        .content { padding: 0 20px; padding-bottom: 20px; }
+        /* --- MAP --- */
+        .map-frame { width: 100%; height: 180px; background: #333; border-radius: 12px; margin-top: 10px; overflow: hidden; border: 1px solid var(--primary); }
         
-        /* --- MAP CONTAINER --- */
-        .map-wrapper { width: 100%; height: 200px; background: #eee; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc; position: relative; }
-        .map-wrapper iframe { width: 100%; height: 100%; border: 0; }
-        
-        /* --- CARDS & GAMES --- */
-        .task-card { background: white; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        
-        /* --- ADMIN CUSTOM GAME --- */
-        .code-editor { width: 100%; height: 150px; background: #333; color: #0f0; font-family: monospace; padding: 10px; border-radius: 5px; border: none; resize: vertical; }
+        /* --- GRID MENUS --- */
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 20px; }
+        .menu-item { background: var(--bg-card); padding: 15px 5px; border-radius: 15px; text-align: center; font-size: 0.8rem; cursor: pointer; border: 1px solid #333; transition: 0.2s; }
+        .menu-item:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .menu-item i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; display: block; }
 
-        /* --- NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { text-align: center; color: #999; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-item i { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 440px; background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(10px);
+            border-radius: 25px; padding: 15px 0; display: flex; justify-content: space-around; 
+            border: 1px solid #444; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 100;
+        }
+        .nav-item { text-align: center; color: #777; font-size: 1.2rem; cursor: pointer; position: relative; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-item.active::after { 
+            content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); 
+            width: 5px; height: 5px; background: var(--primary); border-radius: 50%; 
+        }
+
     </style>
 </head>
 <body>
 
 <div class="screen">
 
-    <!-- LOADING SCREEN -->
-    <div id="loader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary);"></i>
-        <h3 style="margin-top:15px; color:var(--secondary);">RING.BD</h3>
+    <!-- === LOADER === -->
+    <div id="loader">
+        <div class="ring-spinner"></div>
+        <div class="loader-text">RING.BD</div>
     </div>
 
-    <!-- 1. LOGIN PAGE -->
-    <div id="view-login" class="hidden fade-in">
-        <div class="header" style="justify-content: center; padding-bottom: 80px;">
-            <div style="text-align: center;">
-                <h1>RING.BD</h1>
-                <p>Login to your account</p>
-            </div>
+    <!-- === 1. LOGIN PAGE (FIREBASE AUTH) === -->
+    <div id="view-login" class="hidden fade-in" style="padding: 20px; padding-top: 80px;">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <i class="fas fa-fingerprint" style="font-size: 4rem; color: var(--primary);"></i>
+            <h1 style="font-size: 2.5rem; margin-top: 10px;">RING<span style="color:var(--primary)">.BD</span></h1>
+            <p style="color: var(--text-muted);">Secure Login</p>
         </div>
-        <div class="content" style="margin-top: -40px;">
-            <div class="balance-card">
-                <div class="input-group">
-                    <label>User ID</label>
-                    <input type="text" id="login-id" placeholder="RING...">
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="login-pass">
-                </div>
-                <button class="btn btn-primary" onclick="app.login()">Secure Login</button>
-                <button class="btn btn-outline" onclick="nav.to('register')">Register New Account</button>
-                <div style="margin-top:20px; font-size:0.8rem; color:#aaa;" onclick="nav.to('admin-login')">Admin Access</div>
-            </div>
+
+        <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="login-email" placeholder="Email Address">
         </div>
+        <div class="input-box">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="login-pass" placeholder="Password">
+        </div>
+
+        <button class="btn btn-primary" onclick="authApp.login()">Login Now</button>
+        <button class="btn btn-outline" onclick="nav.to('register')">Create Account</button>
+        <p style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #555; cursor: pointer;" onclick="nav.to('admin-login')">Admin Access</p>
     </div>
 
-    <!-- 2. REGISTRATION PAGE (WITH MAP) -->
-    <div id="view-register" class="hidden fade-in">
-        <div class="header"><h2>Create Account</h2></div>
-        <div class="content" style="margin-top: 20px; overflow-y:auto; height: calc(100vh - 100px);">
-            
-            <div class="input-group"><label>Name</label><input type="text" id="reg-name"></div>
-            <div class="input-group"><label>Mobile</label><input type="number" id="reg-mobile"></div>
-            <div class="input-group"><label>Email</label><input type="email" id="reg-email"></div>
-            
-            <!-- GOOGLE MAP SECTION -->
-            <div class="input-group">
-                <label>Verification Address (Live Map)</label>
-                <button class="btn btn-outline" style="padding: 5px; font-size: 0.8rem;" onclick="app.detectLocation()">
-                    <i class="fas fa-map-marker-alt"></i> Detect My Location
+    <!-- === 2. REGISTER PAGE (FULL DATA + AUTH) === -->
+    <div id="view-register" class="hidden fade-in" style="padding: 20px;">
+        <h2 style="margin-bottom: 20px; text-align: center;">New Registration</h2>
+        
+        <div style="height: calc(100vh - 120px); overflow-y: auto; padding-bottom: 50px;">
+            <!-- Auth Info -->
+            <div class="card" style="margin: 0 0 15px 0;">
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Login Details</h4>
+                <div class="input-box"><i class="fas fa-envelope"></i><input type="email" id="reg-email" placeholder="Email (Valid)"></div>
+                <div class="input-box"><i class="fas fa-lock"></i><input type="password" id="reg-pass" placeholder="Password (Min 6 chars)"></div>
+            </div>
+
+            <!-- Personal Info -->
+            <div class="card" style="margin: 0 0 15px 0;">
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Personal Info</h4>
+                <div class="input-box"><i class="fas fa-user"></i><input type="text" id="reg-name" placeholder="Full Name (NID Match)"></div>
+                <div class="input-box"><i class="fas fa-calendar"></i><input type="number" id="reg-age" placeholder="Age (18+)"></div>
+                <div class="input-box"><i class="fas fa-phone"></i><input type="number" id="reg-mobile" placeholder="Mobile Number"></div>
+            </div>
+
+            <!-- Location Map -->
+            <div class="card" style="margin: 0 0 15px 0;">
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Address Verification</h4>
+                <div class="input-box"><i class="fas fa-map-marker-alt"></i><input type="text" id="reg-addr" placeholder="Type Address"></div>
+                <button class="btn btn-outline" style="padding: 10px; margin-top: 0;" onclick="authApp.getLocation()">
+                    <i class="fas fa-crosshairs"></i> Auto Detect Location
                 </button>
-                <div class="map-wrapper">
-                    <!-- Default Map (Bangladesh) -->
-                    <iframe id="google-map-frame" src="https://maps.google.com/maps?q=Dhaka,Bangladesh&z=6&output=embed"></iframe>
-                </div>
+                <iframe id="map-frame" class="map-frame" src="https://maps.google.com/maps?q=Dhaka&z=10&output=embed"></iframe>
                 <input type="hidden" id="reg-coords">
             </div>
 
-            <div class="input-group">
-                <label>Deposit Package</label>
-                <select id="reg-amount">
-                    <option value="3000">Starter - 3,000 ৳</option>
-                    <option value="5000">Standard - 5,000 ৳</option>
-                    <option value="13000">Pro - 13,000 ৳</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label>Payment Method</label>
-                <select id="reg-gateway" onchange="app.toggleGateway()">
-                    <option value="">Select Gateway</option>
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Crypt">Binance/Ton</option>
-                </select>
+            <!-- Payment -->
+            <div class="card" style="margin: 0 0 15px 0;">
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Deposit & Package</h4>
+                <div class="input-box">
+                    <i class="fas fa-box"></i>
+                    <select id="reg-pkg">
+                        <option value="3000">Starter - 3,000 ৳</option>
+                        <option value="5000">Basic - 5,000 ৳</option>
+                        <option value="13000">Standard - 13,000 ৳</option>
+                        <option value="49000">Premium - 49,000 ৳</option>
+                        <option value="78000">Business - 78,000 ৳</option>
+                    </select>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-wallet"></i>
+                    <select id="reg-gw" onchange="authApp.toggleGw()">
+                        <option value="">Select Payment Method</option>
+                        <option value="Ton">Ton / Crypto</option>
+                        <option value="Bkash">Bkash / Nagad</option>
+                    </select>
+                </div>
+                
+                <div id="pay-info" class="hidden" style="background: rgba(255,193,7,0.1); border: 1px solid #ffc107; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                    <p style="font-size: 0.8rem; color: #ffc107;">Send Money To:</p>
+                    <h4 id="display-pay" style="letter-spacing: 1px;">Loading...</h4>
+                </div>
+
+                <div class="input-box"><i class="fas fa-receipt"></i><input type="text" id="reg-trx" placeholder="Transaction ID (TrxID)"></div>
             </div>
 
-            <div id="gateway-info" class="hidden" style="background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px; margin-bottom:10px;">
-                <p>Send Money To: <b id="pay-number">Loading...</b></p>
-                <input type="text" id="reg-trx" placeholder="Enter Transaction ID" style="width:100%; margin-top:5px; padding:8px;">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom: 20px;">
+                <input type="checkbox" id="reg-terms">
+                <label style="font-size: 0.8rem; color: #aaa;">I agree to Terms & Conditions</label>
             </div>
 
-            <button class="btn btn-primary" onclick="app.register()">Submit Request</button>
-            <button class="btn btn-secondary" onclick="nav.to('login')">Cancel</button>
+            <button class="btn btn-primary" onclick="authApp.register()">Complete Registration</button>
+            <button class="btn btn-outline" onclick="nav.to('login')">Cancel</button>
         </div>
     </div>
 
-    <!-- 3. USER HOME -->
+    <!-- === 3. USER DASHBOARD (UPDATED UI) === -->
     <div id="view-home" class="hidden fade-in">
         <div class="header">
             <div>
-                <h3>Hi, <span class="u-name">User</span></h3>
-                <small>Welcome Back</small>
+                <p style="color: var(--text-muted); font-size: 0.8rem;">Welcome Back,</p>
+                <h3 id="u-name">Loading...</h3>
             </div>
-            <div style="text-align:right;">
-                <h3><i class="fas fa-coins"></i> <span id="u-rc">0</span> RC</h3>
+            <div style="width: 45px; height: 45px; background: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid var(--primary);">
+                <i class="fas fa-user" style="color: var(--primary);"></i>
             </div>
         </div>
 
         <div class="balance-card">
-            <p>Main Balance</p>
-            <h1>৳ <span id="u-bal">0.00</span></h1>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn btn-primary" style="margin:0;" onclick="nav.bottom('withdraw')">Withdraw</button>
-                <button class="btn btn-outline" style="margin:0;" onclick="app.copyLink()">Invite</button>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Total Assets</p>
+            <h1 style="font-size: 2.5rem; margin: 5px 0;">৳ <span id="u-bal">0.00</span></h1>
+            <p style="font-size: 0.8rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Daily Income Active</p>
+            
+            <div style="position: absolute; right: 20px; top: 30px;">
+                <img src="https://img.icons8.com/color/48/sim-card-chip.png" width="40" style="opacity: 0.7;">
             </div>
         </div>
 
-        <div class="content">
-            <!-- Marquee -->
-            <div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:5px; margin-bottom:15px; overflow:hidden; white-space:nowrap;">
-                <marquee id="site-notice">Welcome to RING.BD</marquee>
-            </div>
+        <!-- Marquee -->
+        <div style="margin: 0 20px 20px 20px; background: rgba(0,230,118,0.1); border-radius: 8px; padding: 8px; overflow: hidden; white-space: nowrap;">
+            <marquee id="site-notice" style="color: var(--primary); font-size: 0.9rem;">Welcome to RING.BD Official.</marquee>
+        </div>
 
-            <h3>Active Games</h3>
-            <div id="dynamic-games-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                <!-- Standard Game -->
-                <div class="task-card" style="display:block; text-align:center;" onclick="nav.bottom('game')">
-                    <i class="fas fa-gamepad" style="font-size:2rem; color:var(--primary); margin-bottom:5px;"></i>
-                    <h4>Wheel</h4>
-                </div>
-                <!-- Custom Games Injected Here -->
+        <!-- Menu Grid -->
+        <div class="menu-grid">
+            <div class="menu-item" onclick="nav.to('deposit')"><i class="fas fa-plus-circle"></i>Deposit</div>
+            <div class="menu-item" onclick="nav.bottom('withdraw')"><i class="fas fa-wallet"></i>Withdraw</div>
+            <div class="menu-item" onclick="nav.bottom('game')"><i class="fas fa-gamepad"></i>Game</div>
+            <div class="menu-item" onclick="authApp.copyRef()"><i class="fas fa-share-alt"></i>Invite</div>
+        </div>
+
+        <!-- Live Stats -->
+        <div class="card">
+            <h4 style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">My Status</h4>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #aaa;">Current Package:</span>
+                <span style="color: white; font-weight: bold;" id="u-pkg">None</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #aaa;">Total Withdraw:</span>
+                <span style="color: var(--primary); font-weight: bold;">৳ <span id="u-with">0</span></span>
             </div>
         </div>
     </div>
 
-    <!-- 4. GAME PAGE (Standard Wheel) -->
+    <!-- === 4. GAME PAGE === -->
     <div id="view-game" class="hidden fade-in">
-        <div class="header"><h2>Lucky Wheel</h2></div>
-        <div class="content" style="text-align:center; padding-top:20px;">
-            <div style="width:200px; height:200px; background:conic-gradient(red 0deg 60deg, blue 60deg 120deg, green 120deg 180deg, yellow 180deg 240deg, purple 240deg 300deg, orange 300deg 360deg); border-radius:50%; margin:20px auto; border:5px solid #fff; box-shadow:0 0 10px #ccc; transition:transform 3s;" id="wheel"></div>
-            <button class="btn btn-primary" onclick="app.playWheel()">Spin (20 ৳)</button>
+        <div class="header"><h2>Game Zone</h2></div>
+        <div style="padding: 20px;">
+            <!-- Admin Injected Games -->
+            <div id="custom-games-area"></div>
+
+            <!-- Default Game -->
+            <div class="card" style="text-align: center;">
+                <i class="fas fa-dharmachakra" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3>Lucky Wheel</h3>
+                <p style="color: #777; margin-bottom: 15px;">Win up to 100 ৳ instantly!</p>
+                <button class="btn btn-outline" onclick="alert('Coming soon in next update!')">Play Now</button>
+            </div>
         </div>
     </div>
 
-    <!-- 5. PLAY CUSTOM GAME (Dynamic Container) -->
-    <div id="view-custom-play" class="hidden fade-in">
-        <div class="header">
-            <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="nav.bottom('home')"><i class="fas fa-arrow-left"></i></button>
-            <h2 style="margin-left:10px;">Play Game</h2>
-        </div>
-        <div class="content" id="custom-game-container" style="padding-top:20px;">
-            <!-- Admin code renders here -->
-        </div>
-    </div>
-
-    <!-- 6. TASK PAGE -->
+    <!-- === 5. TASK PAGE === -->
     <div id="view-task" class="hidden fade-in">
         <div class="header"><h2>Daily Tasks</h2></div>
-        <div class="content" style="padding-top:20px;" id="task-list">
-            <!-- Tasks loaded from JS -->
-            <div class="task-card">
-                <div><b>Daily Login</b><br><small>Reward: 5 ৳</small></div>
-                <button class="btn btn-primary" style="width:auto;" onclick="app.doTask(5)">Claim</button>
+        <div style="padding: 20px;" id="task-list">
+            <!-- Dynamic Tasks -->
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4>Daily Bonus</h4>
+                    <p style="font-size: 0.8rem; color: #777;">Login Reward</p>
+                </div>
+                <button class="btn btn-primary" style="width: auto; padding: 10px 20px; margin: 0;" onclick="authApp.doTask(10)">Claim 10৳</button>
             </div>
         </div>
     </div>
 
-    <!-- 7. WITHDRAW -->
+    <!-- === 6. WITHDRAW PAGE === -->
     <div id="view-withdraw" class="hidden fade-in">
         <div class="header"><h2>Withdraw</h2></div>
-        <div class="content" style="padding-top:20px;">
-            <div class="balance-card">
-                <h3>৳ <span id="w-bal">0.00</span></h3>
+        <div style="padding: 20px;">
+            <div class="balance-card" style="margin: 0 0 20px 0;">
+                <p>Available Balance</p>
+                <h1>৳ <span id="w-bal">0.00</span></h1>
             </div>
-            <div class="input-group">
-                <label>Method</label>
-                <select id="w-method"><option>Bkash</option><option>Nagad</option></select>
+
+            <div class="card" style="margin: 0;">
+                <div class="input-box"><i class="fas fa-bank"></i>
+                    <select id="w-method">
+                        <option>Bkash</option>
+                        <option>Nagad</option>
+                        <option>Binance</option>
+                    </select>
+                </div>
+                <div class="input-box"><i class="fas fa-hashtag"></i><input type="text" id="w-num" placeholder="Account Number"></div>
+                <div class="input-box"><i class="fas fa-money-bill"></i><input type="number" id="w-amt" placeholder="Amount"></div>
+                <button class="btn btn-primary" onclick="authApp.withdraw()">Confirm Request</button>
             </div>
-            <div class="input-group"><label>Number</label><input type="number" id="w-num"></div>
-            <div class="input-group"><label>Amount</label><input type="number" id="w-amt"></div>
-            <button class="btn btn-primary" onclick="app.withdraw()">Confirm</button>
         </div>
     </div>
 
-    <!-- 8. ADMIN PANEL -->
-    <div id="view-admin" class="hidden fade-in" style="background:#eee; min-height:100vh;">
-        <div class="header" style="background:#333;">
+    <!-- === 7. PROFILE PAGE === -->
+    <div id="view-profile" class="hidden fade-in">
+        <div class="header"><h2>My Profile</h2></div>
+        <div style="padding: 20px; text-align: center;">
+            <div style="width: 100px; height: 100px; border-radius: 50%; background: #333; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary);">
+                <i class="fas fa-user" style="font-size: 3rem; color: white;"></i>
+            </div>
+            <h3 id="p-name">User Name</h3>
+            <p id="p-email" style="color: #777; font-size: 0.9rem;">user@mail.com</p>
+            
+            <div class="menu-grid" style="margin-top: 30px;">
+                <div class="menu-item" onclick="alert('Contact Support')"><i class="fas fa-headset"></i>Support</div>
+                <div class="menu-item" onclick="alert('App Version 2.0')"><i class="fas fa-info-circle"></i>About</div>
+                <div class="menu-item" style="border-color: red;" onclick="authApp.logout()">
+                    <i class="fas fa-sign-out-alt" style="color: red;"></i>Logout
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === ADMIN PANELS (Minified UI) === -->
+    <div id="view-admin-login" class="hidden fade-in" style="padding: 50px 20px;">
+        <h2>Admin</h2><br>
+        <input type="password" id="adm-pass" placeholder="Password" style="width:100%; padding:15px; background:#333; border:none; color:white;">
+        <button class="btn btn-primary" onclick="admin.login()">Access</button>
+        <button class="btn btn-outline" onclick="nav.to('login')">Back</button>
+    </div>
+
+    <div id="view-admin" class="hidden fade-in" style="background:#ddd; min-height:100vh; color:black;">
+        <div style="background:#333; padding:15px; color:white; display:flex; justify-content:space-between;">
             <h3>Admin Panel</h3>
-            <button onclick="location.reload()" style="background:red; color:white; border:none; padding:5px 10px;">Exit</button>
+            <button onclick="window.location.reload()" style="background:red; color:white; border:none; padding:5px;">Exit</button>
         </div>
-        
-        <div style="padding:10px; background:white; overflow-x:auto; display:flex; gap:5px;">
-            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('req')">Requests</button>
-            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('with')">Withdraws</button>
-            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('game')">Add Game</button>
-            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('set')">Settings</button>
+        <div style="padding:10px; display:flex; gap:10px; overflow-x:auto;">
+            <button class="btn btn-primary" style="width:auto; margin:0;" onclick="admin.show('req')">Users</button>
+            <button class="btn btn-primary" style="width:auto; margin:0;" onclick="admin.show('with')">Pays</button>
+            <button class="btn btn-primary" style="width:auto; margin:0;" onclick="admin.show('set')">Settings</button>
         </div>
-
-        <div id="adm-content" class="content" style="padding-top:10px;">
-            <!-- Content Injected Here -->
-        </div>
+        <div id="adm-content" style="padding:10px;"></div>
     </div>
 
-    <!-- ADMIN LOGIN -->
-    <div id="view-admin-login" class="hidden fade-in">
-        <div class="header"><h2>Admin Security</h2></div>
-        <div class="content" style="padding-top:50px;">
-            <input type="password" id="adm-pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="btn btn-secondary" onclick="admin.login()">Login</button>
-            <button class="btn btn-outline" onclick="nav.to('login')">Back</button>
-        </div>
-    </div>
-
-    <!-- NAVIGATION -->
+    <!-- === BOTTOM NAV === -->
     <div class="bottom-nav hidden" id="main-nav">
-        <div class="nav-item active" id="nav-home" onclick="nav.bottom('home')"><i class="fas fa-home"></i> Home</div>
-        <div class="nav-item" id="nav-game" onclick="nav.bottom('game')"><i class="fas fa-gamepad"></i> Game</div>
-        <div class="nav-item" id="nav-task" onclick="nav.bottom('task')"><i class="fas fa-tasks"></i> Task</div>
-        <div class="nav-item" id="nav-withdraw" onclick="nav.bottom('withdraw')"><i class="fas fa-wallet"></i> Wallet</div>
+        <div class="nav-item active" id="nav-home" onclick="nav.bottom('home')"><i class="fas fa-home"></i></div>
+        <div class="nav-item" id="nav-task" onclick="nav.bottom('task')"><i class="fas fa-list-check"></i></div>
+        <div class="nav-item" id="nav-game" onclick="nav.bottom('game')"><i class="fas fa-gamepad"></i></div>
+        <div class="nav-item" id="nav-withdraw" onclick="nav.bottom('withdraw')"><i class="fas fa-wallet"></i></div>
+        <div class="nav-item" id="nav-profile" onclick="nav.bottom('profile')"><i class="fas fa-user"></i></div>
     </div>
 
 </div>
 
-<!-- FIREBASE SDK -->
+<!-- Firebase SDKs (Auth + Database) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // --- FIREBASE CONFIG (YOUR KEY) ---
+    // --- 1. FIREBASE CONFIG ---
+    // (Replace with your actual keys from Firebase Console)
     const firebaseConfig = {
-        apiKey: "AIzaSyAtfjaSSlaDYUsogHrvBn_6MbEbM-M-O4Q",
-        authDomain: "test-g-login-nur.firebaseapp.com",
-        projectId: "test-g-login-nur",
-        storageBucket: "test-g-login-nur.firebasestorage.app",
-        messagingSenderId: "19016505156",
-        appId: "1:19016505156:web:72b1480a444317853f6911",
-        measurementId: "G-QX5D57GRX8"
+        apiKey: "YOUR_API_KEY_HERE",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "123456",
+        appId: "1:123456:web:abcdef"
     };
 
-    let db;
+    // Initialize
+    let db, auth;
     try {
         if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-    } catch(e) { console.error(e); }
+        auth = firebase.auth();
+    } catch(e) { console.error("Firebase Error", e); }
 
-    // --- STATE ---
+    // --- 2. GLOBAL STATE ---
     let currentUser = null;
     let settings = { notice: "Welcome", payInfo: "017...", gameCost: 20 };
 
-    // --- NAVIGATION ---
+    // --- 3. NAVIGATION ---
     const nav = {
         to: (id) => {
             document.querySelectorAll('[id^="view-"]').forEach(e => e.classList.add('hidden'));
             document.getElementById('view-'+id).classList.remove('hidden');
-            if(['login','register','admin','admin-login'].includes(id)) document.getElementById('main-nav').classList.add('hidden');
+            const isAuth = ['login','register','admin','admin-login'].includes(id);
+            if(isAuth) document.getElementById('main-nav').classList.add('hidden');
         },
         bottom: (id) => {
-            ['home','game','task','withdraw'].forEach(t => {
+            ['home','game','task','withdraw','profile'].forEach(t => {
                 document.getElementById('view-'+t).classList.add('hidden');
                 document.getElementById('nav-'+t).classList.remove('active');
             });
-            // If viewing custom game, hide standard game view
-            document.getElementById('view-custom-play').classList.add('hidden');
-            
             document.getElementById('view-'+id).classList.remove('hidden');
             document.getElementById('nav-'+id).classList.add('active');
             document.getElementById('main-nav').classList.remove('hidden');
         }
     };
 
-    // --- MAIN APP ---
-    const app = {
+    // --- 4. APP LOGIC ---
+    const authApp = {
         init: () => {
-            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2000);
-            db.ref('settings').on('value', s => { if(s.exists()) { settings = s.val(); document.getElementById('site-notice').innerText = settings.notice; } });
-            nav.to('login');
-        },
-
-        // --- MAP FEATURE ---
-        detectLocation: () => {
-            const btn = event.target;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2500); // New loader time
             
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    
-                    // Update Iframe with Real Location
-                    const mapUrl = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-                    document.getElementById('google-map-frame').src = mapUrl;
-                    document.getElementById('reg-coords').value = `${lat}, ${lon}`;
-                    
-                    btn.innerHTML = '<i class="fas fa-check"></i> Location Set';
-                    btn.className = 'btn btn-primary';
-                }, (error) => {
-                    alert("Please allow location access.");
-                    btn.innerHTML = 'Retry Location';
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
+            // Listen for Auth State
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in
+                    authApp.loadUserData(user.uid);
+                } else {
+                    // No user
+                    nav.to('login');
+                }
+            });
+
+            // Load Settings
+            db.ref('settings').on('value', s => { 
+                if(s.exists()) { 
+                    settings = s.val(); 
+                    document.getElementById('site-notice').innerText = settings.notice; 
+                } 
+            });
         },
 
-        toggleGateway: () => {
-            const gw = document.getElementById('reg-gateway').value;
-            const info = document.getElementById('gateway-info');
-            if(gw) {
-                info.classList.remove('hidden');
-                document.getElementById('pay-number').innerText = settings.payInfo;
-            } else info.classList.add('hidden');
-        },
-
+        // REGISTER WITH FIREBASE AUTH
         register: () => {
-            const d = {
-                name: document.getElementById('reg-name').value,
-                mobile: document.getElementById('reg-mobile').value,
-                email: document.getElementById('reg-email').value,
-                coords: document.getElementById('reg-coords').value || "Not Set",
-                pkg: document.getElementById('reg-amount').value,
-                trx: document.getElementById('reg-trx').value,
-                status: 'pending',
-                date: Date.now()
-            };
-            if(!d.name || !d.mobile || !d.trx) return alert("Fill all fields");
-            
-            db.ref('registrations').push(d);
-            alert("Request Sent!");
-            nav.to('login');
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const name = document.getElementById('reg-name').value;
+            const mobile = document.getElementById('reg-mobile').value;
+            const pkg = document.getElementById('reg-pkg').value;
+            const trx = document.getElementById('reg-trx').value;
+            const addr = document.getElementById('reg-addr').value;
+            const terms = document.getElementById('reg-terms').checked;
+
+            if(!email || !pass || !name || !mobile || !trx) return alert("Please fill all fields!");
+            if(!terms) return alert("Accept Terms!");
+
+            document.getElementById('loader').classList.remove('hidden');
+
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then((userCredential) => {
+                    const uid = userCredential.user.uid;
+                    // Save extra data to Database
+                    db.ref('users/' + uid).set({
+                        name: name,
+                        email: email,
+                        mobile: mobile,
+                        address: addr,
+                        coords: document.getElementById('reg-coords').value || "N/A",
+                        package: parseInt(pkg),
+                        balance: 0, // Pending approval
+                        depositStatus: 'pending', // Key flag
+                        trxId: trx,
+                        totalWithdraw: 0,
+                        joined: Date.now()
+                    }).then(() => {
+                        document.getElementById('loader').classList.add('hidden');
+                        alert("Account Created! Deposit Pending Admin Approval.");
+                    });
+                })
+                .catch((error) => {
+                    document.getElementById('loader').classList.add('hidden');
+                    alert("Error: " + error.message);
+                });
         },
 
         login: () => {
-            const id = document.getElementById('login-id').value;
+            const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            db.ref('users/'+id).once('value', s => {
-                if(s.exists() && s.val().pass === pass) {
-                    currentUser = s.val(); currentUser.id = id;
-                    app.loadDashboard();
-                } else alert("Invalid Login");
-            });
-        },
+            if(!email || !pass) return alert("Enter credentials");
 
-        loadDashboard: () => {
-            db.ref('users/'+currentUser.id).on('value', s => {
-                currentUser = s.val(); currentUser.id = s.key;
-                document.querySelector('.u-name').innerText = currentUser.name;
-                document.getElementById('u-bal').innerText = currentUser.bal;
-                document.getElementById('w-bal').innerText = currentUser.bal;
-                document.getElementById('u-rc').innerText = currentUser.rc || 0;
-            });
-            
-            // Load Custom Games
-            db.ref('customGames').on('value', s => {
-                const list = document.getElementById('dynamic-games-list');
-                // Keep standard wheel, clear others
-                list.innerHTML = `
-                <div class="task-card" style="display:block; text-align:center;" onclick="nav.bottom('game')">
-                    <i class="fas fa-gamepad" style="font-size:2rem; color:var(--primary); margin-bottom:5px;"></i>
-                    <h4>Wheel</h4>
-                </div>`;
-                
-                s.forEach(g => {
-                    const game = g.val();
-                    const key = g.key;
-                    // Create card for custom game
-                    const card = document.createElement('div');
-                    card.className = 'task-card';
-                    card.style.display = 'block';
-                    card.style.textAlign = 'center';
-                    card.innerHTML = `<i class="fas fa-puzzle-piece" style="font-size:2rem; color:#f1c40f; margin-bottom:5px;"></i><h4>${game.name}</h4>`;
-                    card.onclick = () => app.playCustomGame(game.code);
-                    list.appendChild(card);
+            document.getElementById('loader').classList.remove('hidden');
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch((error) => {
+                    document.getElementById('loader').classList.add('hidden');
+                    alert("Login Failed: " + error.message);
                 });
+        },
+
+        loadUserData: (uid) => {
+            db.ref('users/' + uid).on('value', s => {
+                if(!s.exists()) return;
+                currentUser = s.val();
+                currentUser.uid = uid;
+
+                // Bind Data to UI
+                document.getElementById('u-name').innerText = currentUser.name;
+                document.getElementById('u-bal').innerText = currentUser.balance;
+                document.getElementById('w-bal').innerText = currentUser.balance;
+                document.getElementById('u-pkg').innerText = currentUser.package + " ৳";
+                document.getElementById('u-with').innerText = currentUser.totalWithdraw;
+                
+                // Profile
+                document.getElementById('p-name').innerText = currentUser.name;
+                document.getElementById('p-email').innerText = currentUser.email;
+
+                document.getElementById('loader').classList.add('hidden');
+                nav.bottom('home');
             });
-
-            nav.bottom('home');
         },
 
-        playWheel: () => {
-            if(currentUser.bal < 20) return alert("Low Balance");
-            db.ref('users/'+currentUser.id).update({bal: currentUser.bal - 20});
-            const w = document.getElementById('wheel');
-            w.style.transform = `rotate(${Math.random()*3000}deg)`;
-            setTimeout(() => {
-                const win = 30;
-                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + win});
-                alert("Won "+win+" ৳");
-                w.style.transform = 'rotate(0deg)';
-            }, 3000);
+        logout: () => {
+            auth.signOut();
+            window.location.reload();
         },
 
-        playCustomGame: (htmlCode) => {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-custom-play').classList.remove('hidden');
-            // INJECT CODE
-            const container = document.getElementById('custom-game-container');
-            container.innerHTML = htmlCode;
-            
-            // Helper function for custom games to reward user
-            window.claimReward = (amount) => {
-                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + amount});
-                alert("Custom Game Reward: " + amount + "৳ Added!");
-            };
+        // Map Feature
+        getLocation: () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((p) => {
+                    const lat = p.coords.latitude;
+                    const lon = p.coords.longitude;
+                    document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${lat},${lon}&z=14&output=embed`;
+                    document.getElementById('reg-coords').value = `${lat},${lon}`;
+                    alert("Location Detected!");
+                });
+            } else alert("Geolocation not supported");
+        },
+
+        toggleGw: () => {
+            const gw = document.getElementById('reg-gw').value;
+            if(gw) {
+                document.getElementById('pay-info').classList.remove('hidden');
+                document.getElementById('display-pay').innerText = settings.payInfo;
+            } else {
+                document.getElementById('pay-info').classList.add('hidden');
+            }
         },
 
         doTask: (amt) => {
-            const b = event.target; b.disabled = true; b.innerText = "Wait...";
+            if(currentUser.balance === 0) return alert("Deposit not approved or 0 balance!");
+            const btn = event.target; btn.disabled = true; btn.innerText = "Claiming...";
             setTimeout(() => {
-                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + amt});
-                alert("Claimed!");
-                b.style.display = 'none';
+                db.ref('users/' + currentUser.uid).update({ balance: currentUser.balance + amt });
+                btn.innerText = "Done";
             }, 2000);
         },
 
         withdraw: () => {
-            const amt = parseInt(document.getElementById('w-amt').value);
-            if(amt > currentUser.bal) return alert("Insufficient");
-            db.ref('users/'+currentUser.id).update({bal: currentUser.bal - amt});
+            const amt = document.getElementById('w-amt').value;
+            if(amt > currentUser.balance) return alert("Insufficient Balance");
+            db.ref('users/' + currentUser.uid).update({ balance: currentUser.balance - amt });
             db.ref('withdrawals').push({
-                uid: currentUser.id, name: currentUser.name,
-                amt: amt, num: document.getElementById('w-num').value,
-                method: document.getElementById('w-method').value, status: 'pending'
+                uid: currentUser.uid,
+                name: currentUser.name,
+                amt: amt,
+                method: document.getElementById('w-method').value,
+                num: document.getElementById('w-num').value,
+                status: 'pending'
             });
-            alert("Sent!"); nav.bottom('home');
+            alert("Withdraw Requested!");
+            nav.bottom('home');
         },
 
-        copyLink: () => {
-            navigator.clipboard.writeText("https://ring.bd/ref/"+currentUser.id);
-            alert("Copied!");
+        copyRef: () => {
+            navigator.clipboard.writeText("https://ring.bd/join?ref=" + currentUser.uid);
+            alert("Referral Link Copied");
         }
     };
 
-    // --- ADMIN ---
+    // --- 5. ADMIN LOGIC ---
     const admin = {
         login: () => {
             if(document.getElementById('adm-pass').value === 'admin123') {
-                nav.to('admin'); admin.show('req');
-            } else alert("Wrong");
+                nav.to('admin');
+                admin.show('req');
+            } else alert("Wrong Password");
         },
         show: (tab) => {
             const c = document.getElementById('adm-content');
             c.innerHTML = 'Loading...';
+            
             if(tab === 'req') {
-                db.ref('registrations').orderByChild('status').equalTo('pending').on('value', s => {
-                    c.innerHTML = '<h4>Registrations</h4>';
+                // Show users with pending deposit or all users
+                db.ref('users').orderByChild('depositStatus').equalTo('pending').on('value', s => {
+                    c.innerHTML = '<h4>Pending Deposits</h4>';
                     s.forEach(x => {
-                        const d = x.val();
-                        c.innerHTML += `<div class="task-card">
-                            <div><b>${d.name}</b><br><small>${d.pkg} | Trx: ${d.trx}</small><br><small>Loc: ${d.coords}</small></div>
-                            <button class="btn btn-primary" style="width:auto;" onclick="admin.apr('${x.key}','${d.name}','${d.mobile}',${d.pkg})">✓</button>
+                        const u = x.val();
+                        c.innerHTML += `
+                        <div style="background:white; padding:10px; margin:5px; border-radius:5px;">
+                            <b>${u.name}</b> (${u.package} ৳)<br>
+                            Trx: ${u.trxId}<br>
+                            <button class="btn btn-primary" style="width:auto; padding:5px 10px;" onclick="admin.approve('${x.key}', ${u.package})">Approve Deposit</button>
                         </div>`;
                     });
                 });
             } else if(tab === 'with') {
                 db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', s => {
-                    c.innerHTML = '<h4>Withdrawals</h4>';
+                    c.innerHTML = '<h4>Pending Withdrawals</h4>';
                     s.forEach(x => {
-                        const d = x.val();
-                        c.innerHTML += `<div class="task-card">
-                            <div><b>${d.amt} ৳</b><br><small>${d.method}: ${d.num}</small></div>
-                            <button class="btn btn-primary" style="width:auto;" onclick="admin.pay('${x.key}')">Pay</button>
+                        const w = x.val();
+                        c.innerHTML += `
+                        <div style="background:white; padding:10px; margin:5px; border-radius:5px;">
+                            <b>${w.amt} ৳</b> - ${w.method}<br>
+                            To: ${w.num}<br>
+                            <button class="btn btn-primary" style="width:auto; padding:5px 10px;" onclick="admin.pay('${x.key}')">Mark Paid</button>
                         </div>`;
                     });
                 });
-            } else if(tab === 'game') {
-                // ADMIN CUSTOM GAME BUILDER
-                c.innerHTML = `
-                    <h4>Add Custom Game</h4>
-                    <div class="input-group">
-                        <label>Game Name</label>
-                        <input id="new-g-name" placeholder="Ex: Clicker">
-                    </div>
-                    <div class="input-group">
-                        <label>Game HTML/JS Code</label>
-                        <small>Use 'claimReward(10)' to give money in JS.</small>
-                        <textarea id="new-g-code" class="code-editor" placeholder="<button onclick='claimReward(5)'>Click Me</button>"></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="admin.saveGame()">Upload Game</button>
-                    <hr>
-                    <h4>Existing Games</h4>
-                    <div id="adm-game-list"></div>
-                `;
-                db.ref('customGames').on('value', s => {
-                     const l = document.getElementById('adm-game-list'); l.innerHTML = '';
-                     s.forEach(g => {
-                         l.innerHTML += `<div style="background:white; padding:5px; margin:5px 0;">${g.val().name} <button onclick="db.ref('customGames/${g.key}').remove()" style="color:red;">Del</button></div>`;
-                     });
-                });
             } else {
-                c.innerHTML = `<h4>Settings</h4><input id="s-n" value="${settings.notice}"><input id="s-p" value="${settings.payInfo}"><button class="btn btn-primary" onclick="admin.saveSet()">Save</button>`;
+                c.innerHTML = `
+                    <h4>Settings</h4>
+                    <input id="s-n" value="${settings.notice}" style="width:100%; padding:10px; margin-bottom:5px;">
+                    <input id="s-p" value="${settings.payInfo}" style="width:100%; padding:10px; margin-bottom:5px;">
+                    <button class="btn btn-primary" onclick="admin.save()">Save</button>
+                `;
             }
         },
-        apr: (k,n,m,p) => {
-            const uid="RING"+Math.floor(1000+Math.random()*9000), pw=Math.random().toString(36).slice(-5);
-            db.ref('users/'+uid).set({name:n, mobile:m, pass:pw, bal:50, rc:0});
-            db.ref('registrations/'+k).update({status:'approved'});
-            alert(`ID: ${uid}\nPass: ${pw}`);
+        approve: (uid, amount) => {
+            // Add balance based on package + deposit status approved
+            db.ref('users/' + uid).update({
+                depositStatus: 'approved',
+                balance: amount // Adding package amount to balance or separate wallet
+            });
+            alert("User Approved!");
         },
-        pay: (k) => db.ref('withdrawals/'+k).update({status:'paid'}),
-        saveGame: () => {
-            const n = document.getElementById('new-g-name').value;
-            const c = document.getElementById('new-g-code').value;
-            db.ref('customGames').push({name:n, code:c});
-            alert("Game Uploaded!");
-        },
-        saveSet: () => db.ref('settings').update({notice:document.getElementById('s-n').value, payInfo:document.getElementById('s-p').value})
+        pay: (key) => db.ref('withdrawals/' + key).update({ status: 'paid' }),
+        save: () => {
+            db.ref('settings').update({
+                notice: document.getElementById('s-n').value,
+                payInfo: document.getElementById('s-p').value
+            });
+            alert("Settings Saved");
+        }
     };
 
-    window.onload = app.init;
+    window.onload = authApp.init;
+
 </script>
 </body>
 </html>
