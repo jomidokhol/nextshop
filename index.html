@@ -3,358 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RING.BD - Crypto Mining & Gaming</title>
+    <title>RING.BD - Official Earning Site</title>
     <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #00e676; /* Ring Coin Green */
-            --primary-dark: #00b248;
-            --bg-dark: #0d1117;
-            --bg-card: #161b22;
-            --text-main: #f0f6fc;
-            --text-muted: #8b949e;
-            --accent: #ffd700; /* Gold */
-            --danger: #f85149;
+            /* --- OLD THEME COLORS (Restored) --- */
+            --primary: #00bf8f; 
+            --primary-dark: #008f6b;
+            --secondary: #2c3e50;
+            --accent: #f1c40f;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text: #333333;
+            --danger: #ff4757;
         }
 
-        * { box-sizing: border-box; font-family: 'Rajdhani', sans-serif; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; user-select: none; }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; user-select: none; }
 
-        /* --- ANIMATIONS --- */
+        /* --- UTILS --- */
+        .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- UI COMPONENTS --- */
-        .hidden { display: none !important; }
-        
-        .btn { border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.2s; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
+        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; font-size: 1rem; margin-top: 10px; color: white; }
         .btn:active { transform: scale(0.96); }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #000; box-shadow: 0 4px 15px rgba(0,230,118,0.4); }
+        .btn-primary { background: var(--primary); box-shadow: 0 4px 10px rgba(0,191,143,0.3); }
+        .btn-secondary { background: var(--secondary); }
+        .btn-danger { background: var(--danger); }
         .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
-        .btn-danger { background: var(--danger); color: white; }
-
+        
         .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--primary); font-weight: 600; }
-        .input-group input, .input-group select { width: 100%; padding: 14px; border: 1px solid #30363d; border-radius: 10px; background: #0d1117; color: white; font-size: 1rem; }
+        .input-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #666; font-weight: 600; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 1rem; }
         .input-group input:focus { border-color: var(--primary); }
 
         /* --- LAYOUT --- */
-        .screen { max-width: 480px; margin: 0 auto; background: var(--bg-card); min-height: 100vh; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5); overflow-x: hidden; }
+        .screen { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        .header { background: var(--secondary); color: white; padding: 25px 20px 50px 20px; border-radius: 0 0 25px 25px; position: relative; display: flex; justify-content: space-between; align-items: center; }
         
-        .header { background: linear-gradient(180deg, rgba(22,27,34,1) 0%, rgba(13,17,23,0) 100%); padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(5px); }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; }
-        .logo span { color: white; }
+        .balance-card { background: white; color: var(--text); padding: 20px; margin: -35px 20px 20px 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; position: relative; z-index: 10; border-top: 5px solid var(--primary); }
 
-        .coin-balance-display { background: rgba(0,230,118,0.1); border: 1px solid var(--primary); padding: 5px 15px; border-radius: 20px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-
-        /* --- CARDS --- */
-        .stat-card { background: linear-gradient(135deg, #21262d, #161b22); padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 15px; text-align: center; }
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
-        .game-card { background: #21262d; border-radius: 15px; padding: 15px; text-align: center; border: 1px solid #30363d; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
-        .game-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .game-card i { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
-        .game-card h4 { color: white; }
-        .game-card p { font-size: 0.8rem; color: var(--text-muted); }
-
-        /* --- BOTTOM NAV --- */
-        .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; background: rgba(22,27,34,0.9); border: 1px solid #30363d; backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; flex: 1; transition: 0.3s; position: relative; }
-        .nav-item i { font-size: 1.4rem; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
-        .nav-item.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
-
-        /* --- GAMES SPECIFIC --- */
-        /* WHEEL */
-        .wheel-container { position: relative; width: 250px; height: 250px; margin: 20px auto; }
-        .game-wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #30363d; background: conic-gradient(#f44336 0deg 60deg, #ffeb3b 60deg 120deg, #2196f3 120deg 180deg, #4caf50 180deg 240deg, #9c27b0 240deg 300deg, #ff9800 300deg 360deg); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid white; z-index: 10; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); }
+        .content { padding: 0 20px; padding-bottom: 20px; }
         
-        /* SCRATCH */
-        .scratch-container { position: relative; width: 250px; height: 150px; margin: 20px auto; border-radius: 10px; overflow: hidden; border: 2px solid #30363d; background: white; display: flex; justify-content: center; align-items: center; }
-        .scratch-result { font-size: 2rem; color: #333; font-weight: bold; }
-        canvas#scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+        /* --- MAP CONTAINER --- */
+        .map-wrapper { width: 100%; height: 200px; background: #eee; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc; position: relative; }
+        .map-wrapper iframe { width: 100%; height: 100%; border: 0; }
+        
+        /* --- CARDS & GAMES --- */
+        .task-card { background: white; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        
+        /* --- ADMIN CUSTOM GAME --- */
+        .code-editor { width: 100%; height: 150px; background: #333; color: #0f0; font-family: monospace; padding: 10px; border-radius: 5px; border: none; resize: vertical; }
 
-        /* COIN FLIP */
-        .coin-flip-box { width: 120px; height: 120px; margin: 20px auto; perspective: 1000px; }
-        .coin-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
-        .coin-face { position: absolute; width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; backface-visibility: hidden; border: 5px solid var(--accent); background: linear-gradient(45deg, #ffd700, #ffecb3); color: #b8860b; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-        .coin-back { transform: rotateY(180deg); background: linear-gradient(45deg, #c0c0c0, #e0e0e0); color: #555; border-color: #999; }
-        .animate-flip { animation: flipCoin 2s forwards; }
-        @keyframes flipCoin { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
-
-        /* ADMIN */
-        .admin-row { display: flex; justify-content: space-between; align-items: center; background: #21262d; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
-        .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #333; }
-        .badge-pending { background: var(--accent); color: black; }
+        /* --- NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { text-align: center; color: #999; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item i { display: block; font-size: 1.4rem; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
 <div class="screen">
 
-    <!-- LOADING OVERLAY -->
-    <div id="loader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-dark); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <i class="fas fa-ring fa-spin" style="font-size:4rem; color:var(--primary);"></i>
-        <h2 style="margin-top:20px; color:white;">RING.BD</h2>
-        <p style="color:var(--text-muted);">Initializing Blockchain...</p>
+    <!-- LOADING SCREEN -->
+    <div id="loader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary);"></i>
+        <h3 style="margin-top:15px; color:var(--secondary);">RING.BD</h3>
     </div>
 
-    <!-- === 1. AUTH PAGES === -->
-    
-    <!-- Login -->
-    <div id="view-login" class="hidden fade-in" style="padding: 30px;">
-        <div style="text-align: center; margin-bottom: 40px; margin-top: 50px;">
-            <i class="fas fa-ring pulse" style="font-size: 4rem; color: var(--primary);"></i>
-            <h1 class="logo">RING<span>.BD</span></h1>
-            <p style="color: var(--text-muted);">Crypto Earning Platform</p>
-        </div>
-        
-        <div class="input-group">
-            <label>Wallet ID / User ID</label>
-            <input type="text" id="login-id" placeholder="Ex: RING888">
-        </div>
-        <div class="input-group">
-            <label>Access Key (Password)</label>
-            <input type="password" id="login-pass">
-        </div>
-        
-        <button class="btn btn-primary" onclick="app.login()">Connect Wallet</button>
-        <button class="btn btn-outline" onclick="nav.to('register')">Create New Wallet</button>
-        <div style="text-align:center; margin-top:30px;">
-            <span style="font-size:0.8rem; color:#444; cursor:pointer;" onclick="nav.to('admin-login')">Admin Node Access</span>
-        </div>
-    </div>
-
-    <!-- Register -->
-    <div id="view-register" class="hidden fade-in" style="padding: 20px;">
-        <h2 style="color:white; margin-bottom:20px;">New User Registration</h2>
-        <div class="input-group"><label>Full Name</label><input type="text" id="reg-name"></div>
-        <div class="input-group"><label>Age</label><input type="number" id="reg-age"></div>
-        <div class="input-group"><label>Mobile (+880)</label><input type="number" id="reg-mobile"></div>
-        <div class="input-group"><label>Email</label><input type="email" id="reg-email"></div>
-        <div class="input-group"><label>Address</label><input type="text" id="reg-address"> <button class="btn btn-outline" style="padding:5px; font-size:0.8rem;" onclick="window.open('https://maps.google.com')">Pick from Map</button></div>
-        
-        <div class="input-group">
-            <label>Initial Investment (Buy Ring Coins)</label>
-            <select id="reg-amount">
-                <option value="3000">Starter Node - 3,000 ৳</option>
-                <option value="5000">Miner Node - 5,000 ৳</option>
-                <option value="13000">Validator Node - 13,000 ৳</option>
-                <option value="49000">Master Node - 49,000 ৳</option>
-                <option value="78000">Genesis Node - 78,000 ৳</option>
-            </select>
-        </div>
-        
-        <div class="input-group">
-            <label>Payment Gateway</label>
-            <select id="reg-gateway" onchange="app.toggleGateway()">
-                <option value="">Select Method</option>
-                <option value="Ton">Ton (Crypto)</option>
-                <option value="Crypt">USDT (TRC20)</option>
-                <option value="Bkash">Bkash / Nagad</option>
-            </select>
-        </div>
-
-        <div id="gateway-info" class="hidden" style="background:#21262d; padding:15px; border-radius:10px; border:1px dashed var(--primary); margin-bottom:15px;">
-            <p style="color:var(--accent); font-size:0.9rem;">Send Payment To:</p>
-            <h3 id="display-payment-number" style="color:white; word-break: break-all;">Loading...</h3>
-            <button class="btn btn-outline" style="padding:5px; margin-top:5px;" onclick="app.copyPay()">Copy Address</button>
-            <div class="input-group" style="margin-top:15px;">
-                <label>Transaction Hash / ID</label>
-                <input type="text" id="reg-trx" placeholder="Paste TrxID here">
+    <!-- 1. LOGIN PAGE -->
+    <div id="view-login" class="hidden fade-in">
+        <div class="header" style="justify-content: center; padding-bottom: 80px;">
+            <div style="text-align: center;">
+                <h1>RING.BD</h1>
+                <p>Login to your account</p>
             </div>
         </div>
-
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <input type="checkbox" id="reg-terms">
-            <label style="color:var(--text-muted); font-size:0.8rem; margin:0;">I certify I am 18+ and agree to the Ring Protocol Terms.</label>
-        </div>
-
-        <button class="btn btn-primary" onclick="app.register()">Submit Application</button>
-        <button class="btn btn-outline" onclick="nav.to('login')">Cancel</button>
-    </div>
-
-    <!-- Admin Login -->
-    <div id="view-admin-login" class="hidden fade-in" style="padding: 30px; padding-top: 100px;">
-        <h2>Security Check</h2>
-        <div class="input-group"><label>Admin Key</label><input type="password" id="admin-pass"></div>
-        <button class="btn btn-primary" onclick="admin.login()">Decrypt Panel</button>
-        <button class="btn btn-outline" onclick="nav.to('login')">Back</button>
-    </div>
-
-    <!-- === 2. MAIN APP === -->
-
-    <!-- Home Dashboard -->
-    <div id="view-home" class="hidden fade-in">
-        <div class="header">
-            <div class="logo">RING<span>.BD</span></div>
-            <div class="coin-balance-display">
-                <i class="fas fa-coins"></i> <span id="u-rc-bal">0</span> RC
-            </div>
-        </div>
-        
-        <div style="padding: 20px;">
-            <!-- Marquee -->
-            <div style="background: rgba(255, 215, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 15px; overflow: hidden; white-space: nowrap;">
-                <span id="site-marquee" style="display: inline-block; animation: scroll 15s linear infinite;">Loading latest market news...</span>
-                <style>@keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-150%); } }</style>
-            </div>
-
-            <div class="stat-card">
-                <p style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Total Assets</p>
-                <h1 style="font-size: 3rem; color: white;">৳ <span id="u-bdt-est">0.00</span></h1>
-                <p style="color: var(--primary); font-size: 0.8rem;">1 RC = 1 BDT (Fixed Rate)</p>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn btn-primary" style="font-size: 0.9rem;" onclick="nav.bottom('wallet')"><i class="fas fa-arrow-down"></i> Withdraw</button>
-                    <button class="btn btn-outline" style="font-size: 0.9rem;" onclick="app.copyRef()"><i class="fas fa-user-plus"></i> Refer</button>
+        <div class="content" style="margin-top: -40px;">
+            <div class="balance-card">
+                <div class="input-group">
+                    <label>User ID</label>
+                    <input type="text" id="login-id" placeholder="RING...">
                 </div>
-            </div>
-
-            <h3 style="color: white; margin-bottom: 15px;">Play & Earn</h3>
-            <div class="game-grid">
-                <div class="game-card" onclick="nav.bottom('games')">
-                    <i class="fas fa-gamepad"></i>
-                    <h4>Arcade</h4>
-                    <p>Spin, Scratch & Flip</p>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-pass">
                 </div>
-                <div class="game-card" onclick="nav.bottom('tasks')">
-                    <i class="fas fa-clipboard-check" style="color: #00e676;"></i>
-                    <h4>Daily Tasks</h4>
-                    <p>Watch Ads & Earn</p>
-                </div>
+                <button class="btn btn-primary" onclick="app.login()">Secure Login</button>
+                <button class="btn btn-outline" onclick="nav.to('register')">Register New Account</button>
+                <div style="margin-top:20px; font-size:0.8rem; color:#aaa;" onclick="nav.to('admin-login')">Admin Access</div>
             </div>
         </div>
     </div>
 
-    <!-- Games Hub -->
-    <div id="view-games" class="hidden fade-in" style="padding-bottom: 100px;">
-        <div class="header"><h3>Game Zone</h3><div class="coin-balance-display"><span id="g-rc-bal">0</span> RC</div></div>
-        
-        <div style="padding: 20px;">
-            <!-- Game 1: Wheel -->
-            <div class="stat-card">
-                <h4><i class="fas fa-dharmachakra" style="color:cyan;"></i> Lucky Wheel</h4>
-                <div class="wheel-container">
-                    <div class="wheel-pointer"></div>
-                    <div class="game-wheel" id="wheel"></div>
-                </div>
-                <p>Cost: <span class="game-cost">20</span> RC</p>
-                <button class="btn btn-primary" onclick="games.playWheel()">SPIN NOW</button>
-            </div>
-
-            <!-- Game 2: Scratch Card -->
-            <div class="stat-card">
-                <h4><i class="fas fa-ticket-alt" style="color:orange;"></i> Scratch & Win</h4>
-                <div class="scratch-container" id="scratch-area">
-                    <div class="scratch-result">You Won <br><span id="scratch-win-amt" style="color:green">0</span> RC</div>
-                    <canvas id="scratch-canvas"></canvas>
-                </div>
-                <p>Cost: <span class="game-cost">20</span> RC</p>
-                <button class="btn btn-outline" onclick="games.resetScratch()">New Card</button>
-            </div>
-
-            <!-- Game 3: Coin Flip -->
-            <div class="stat-card">
-                <h4><i class="fas fa-coins" style="color:gold;"></i> Coin Flip</h4>
-                <div class="coin-flip-box">
-                    <div class="coin-inner" id="coin">
-                        <div class="coin-face">H</div>
-                        <div class="coin-face coin-back">T</div>
-                    </div>
-                </div>
-                <p>Bet 50 RC - Win 90 RC</p>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="games.flipCoin('heads')">HEADS</button>
-                    <button class="btn btn-outline" style="color:white; border-color:white;" onclick="games.flipCoin('tails')">TAILS</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tasks Page -->
-    <div id="view-tasks" class="hidden fade-in">
-        <div class="header"><h3>Task Mining</h3></div>
-        <div style="padding: 20px;" id="task-list">
-            <!-- Dynamic Tasks -->
-            <div class="stat-card" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h4 style="color:white;">View Sponsor Ad</h4>
-                    <p style="color:var(--text-muted);">Reward: <span class="task-reward">10</span> RC</p>
-                </div>
-                <button class="btn btn-primary" style="width: auto; padding: 8px 20px;" onclick="app.doTask(this)">CLAIM</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Wallet / Profile -->
-    <div id="view-wallet" class="hidden fade-in">
-        <div class="header"><h3>My Wallet</h3></div>
-        <div style="padding: 20px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="width: 80px; height: 80px; background: #30363d; border-radius: 50%; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: var(--primary);"><i class="fas fa-user-astronaut"></i></div>
-                <h2 id="p-name" style="color: white;">User</h2>
-                <p id="p-id" style="color: var(--text-muted);">ID: --</p>
-            </div>
-
-            <div class="stat-card">
-                <p>Available Ring Coin</p>
-                <h2 style="color:var(--primary);"><span id="p-bal">0</span> RC</h2>
-            </div>
-
-            <h4 style="color:white; margin: 20px 0 10px;">Withdraw Funds (Sell RC)</h4>
+    <!-- 2. REGISTRATION PAGE (WITH MAP) -->
+    <div id="view-register" class="hidden fade-in">
+        <div class="header"><h2>Create Account</h2></div>
+        <div class="content" style="margin-top: 20px; overflow-y:auto; height: calc(100vh - 100px);">
+            
+            <div class="input-group"><label>Name</label><input type="text" id="reg-name"></div>
+            <div class="input-group"><label>Mobile</label><input type="number" id="reg-mobile"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="reg-email"></div>
+            
+            <!-- GOOGLE MAP SECTION -->
             <div class="input-group">
-                <label>Method</label>
-                <select id="w-method">
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Binance">Binance (USDT)</option>
+                <label>Verification Address (Live Map)</label>
+                <button class="btn btn-outline" style="padding: 5px; font-size: 0.8rem;" onclick="app.detectLocation()">
+                    <i class="fas fa-map-marker-alt"></i> Detect My Location
+                </button>
+                <div class="map-wrapper">
+                    <!-- Default Map (Bangladesh) -->
+                    <iframe id="google-map-frame" src="https://maps.google.com/maps?q=Dhaka,Bangladesh&z=6&output=embed"></iframe>
+                </div>
+                <input type="hidden" id="reg-coords">
+            </div>
+
+            <div class="input-group">
+                <label>Deposit Package</label>
+                <select id="reg-amount">
+                    <option value="3000">Starter - 3,000 ৳</option>
+                    <option value="5000">Standard - 5,000 ৳</option>
+                    <option value="13000">Pro - 13,000 ৳</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label>Wallet Number</label>
-                <input type="text" id="w-number" placeholder="017...">
-            </div>
-            <div class="input-group">
-                <label>Amount (Min: <span id="min-with">500</span> RC)</label>
-                <input type="number" id="w-amount">
-            </div>
-            <button class="btn btn-primary" onclick="app.withdraw()">Sell RC & Withdraw</button>
             
-            <button class="btn btn-danger" style="margin-top: 30px;" onclick="app.logout()">Secure Logout</button>
+            <div class="input-group">
+                <label>Payment Method</label>
+                <select id="reg-gateway" onchange="app.toggleGateway()">
+                    <option value="">Select Gateway</option>
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Crypt">Binance/Ton</option>
+                </select>
+            </div>
+
+            <div id="gateway-info" class="hidden" style="background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px; margin-bottom:10px;">
+                <p>Send Money To: <b id="pay-number">Loading...</b></p>
+                <input type="text" id="reg-trx" placeholder="Enter Transaction ID" style="width:100%; margin-top:5px; padding:8px;">
+            </div>
+
+            <button class="btn btn-primary" onclick="app.register()">Submit Request</button>
+            <button class="btn btn-secondary" onclick="nav.to('login')">Cancel</button>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="view-admin" class="hidden fade-in" style="background: #000; min-height: 100vh;">
-        <div class="header" style="background: #21262d;">
-            <h3>Admin Node</h3>
-            <button class="btn btn-danger" style="width: auto; padding: 5px 15px;" onclick="app.logout()">Exit</button>
+    <!-- 3. USER HOME -->
+    <div id="view-home" class="hidden fade-in">
+        <div class="header">
+            <div>
+                <h3>Hi, <span class="u-name">User</span></h3>
+                <small>Welcome Back</small>
+            </div>
+            <div style="text-align:right;">
+                <h3><i class="fas fa-coins"></i> <span id="u-rc">0</span> RC</h3>
+            </div>
+        </div>
+
+        <div class="balance-card">
+            <p>Main Balance</p>
+            <h1>৳ <span id="u-bal">0.00</span></h1>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn btn-primary" style="margin:0;" onclick="nav.bottom('withdraw')">Withdraw</button>
+                <button class="btn btn-outline" style="margin:0;" onclick="app.copyLink()">Invite</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Marquee -->
+            <div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:5px; margin-bottom:15px; overflow:hidden; white-space:nowrap;">
+                <marquee id="site-notice">Welcome to RING.BD</marquee>
+            </div>
+
+            <h3>Active Games</h3>
+            <div id="dynamic-games-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                <!-- Standard Game -->
+                <div class="task-card" style="display:block; text-align:center;" onclick="nav.bottom('game')">
+                    <i class="fas fa-gamepad" style="font-size:2rem; color:var(--primary); margin-bottom:5px;"></i>
+                    <h4>Wheel</h4>
+                </div>
+                <!-- Custom Games Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. GAME PAGE (Standard Wheel) -->
+    <div id="view-game" class="hidden fade-in">
+        <div class="header"><h2>Lucky Wheel</h2></div>
+        <div class="content" style="text-align:center; padding-top:20px;">
+            <div style="width:200px; height:200px; background:conic-gradient(red 0deg 60deg, blue 60deg 120deg, green 120deg 180deg, yellow 180deg 240deg, purple 240deg 300deg, orange 300deg 360deg); border-radius:50%; margin:20px auto; border:5px solid #fff; box-shadow:0 0 10px #ccc; transition:transform 3s;" id="wheel"></div>
+            <button class="btn btn-primary" onclick="app.playWheel()">Spin (20 ৳)</button>
+        </div>
+    </div>
+
+    <!-- 5. PLAY CUSTOM GAME (Dynamic Container) -->
+    <div id="view-custom-play" class="hidden fade-in">
+        <div class="header">
+            <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="nav.bottom('home')"><i class="fas fa-arrow-left"></i></button>
+            <h2 style="margin-left:10px;">Play Game</h2>
+        </div>
+        <div class="content" id="custom-game-container" style="padding-top:20px;">
+            <!-- Admin code renders here -->
+        </div>
+    </div>
+
+    <!-- 6. TASK PAGE -->
+    <div id="view-task" class="hidden fade-in">
+        <div class="header"><h2>Daily Tasks</h2></div>
+        <div class="content" style="padding-top:20px;" id="task-list">
+            <!-- Tasks loaded from JS -->
+            <div class="task-card">
+                <div><b>Daily Login</b><br><small>Reward: 5 ৳</small></div>
+                <button class="btn btn-primary" style="width:auto;" onclick="app.doTask(5)">Claim</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. WITHDRAW -->
+    <div id="view-withdraw" class="hidden fade-in">
+        <div class="header"><h2>Withdraw</h2></div>
+        <div class="content" style="padding-top:20px;">
+            <div class="balance-card">
+                <h3>৳ <span id="w-bal">0.00</span></h3>
+            </div>
+            <div class="input-group">
+                <label>Method</label>
+                <select id="w-method"><option>Bkash</option><option>Nagad</option></select>
+            </div>
+            <div class="input-group"><label>Number</label><input type="number" id="w-num"></div>
+            <div class="input-group"><label>Amount</label><input type="number" id="w-amt"></div>
+            <button class="btn btn-primary" onclick="app.withdraw()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- 8. ADMIN PANEL -->
+    <div id="view-admin" class="hidden fade-in" style="background:#eee; min-height:100vh;">
+        <div class="header" style="background:#333;">
+            <h3>Admin Panel</h3>
+            <button onclick="location.reload()" style="background:red; color:white; border:none; padding:5px 10px;">Exit</button>
         </div>
         
-        <div style="padding: 10px; display: flex; gap: 10px; overflow-x: auto;">
-            <button class="btn btn-outline" style="width: auto; font-size: 0.8rem;" onclick="admin.show('req')">Requests</button>
-            <button class="btn btn-outline" style="width: auto; font-size: 0.8rem;" onclick="admin.show('with')">Withdraws</button>
-            <button class="btn btn-outline" style="width: auto; font-size: 0.8rem;" onclick="admin.show('set')">Settings</button>
+        <div style="padding:10px; background:white; overflow-x:auto; display:flex; gap:5px;">
+            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('req')">Requests</button>
+            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('with')">Withdraws</button>
+            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('game')">Add Game</button>
+            <button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="admin.show('set')">Settings</button>
         </div>
 
-        <div id="adm-content" style="padding: 10px;">
-            <!-- Content loaded via JS -->
-            <p style="color: #666;">Select a tab above.</p>
+        <div id="adm-content" class="content" style="padding-top:10px;">
+            <!-- Content Injected Here -->
         </div>
     </div>
 
-    <!-- NAV BAR -->
+    <!-- ADMIN LOGIN -->
+    <div id="view-admin-login" class="hidden fade-in">
+        <div class="header"><h2>Admin Security</h2></div>
+        <div class="content" style="padding-top:50px;">
+            <input type="password" id="adm-pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="btn btn-secondary" onclick="admin.login()">Login</button>
+            <button class="btn btn-outline" onclick="nav.to('login')">Back</button>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
     <div class="bottom-nav hidden" id="main-nav">
-        <div class="nav-item active" id="nav-home" onclick="nav.bottom('home')"><i class="fas fa-chart-pie"></i><span>Home</span></div>
-        <div class="nav-item" id="nav-games" onclick="nav.bottom('games')"><i class="fas fa-gamepad"></i><span>Games</span></div>
-        <div class="nav-item" id="nav-tasks" onclick="nav.bottom('tasks')"><i class="fas fa-list"></i><span>Tasks</span></div>
-        <div class="nav-item" id="nav-wallet" onclick="nav.bottom('wallet')"><i class="fas fa-wallet"></i><span>Wallet</span></div>
+        <div class="nav-item active" id="nav-home" onclick="nav.bottom('home')"><i class="fas fa-home"></i> Home</div>
+        <div class="nav-item" id="nav-game" onclick="nav.bottom('game')"><i class="fas fa-gamepad"></i> Game</div>
+        <div class="nav-item" id="nav-task" onclick="nav.bottom('task')"><i class="fas fa-tasks"></i> Task</div>
+        <div class="nav-item" id="nav-withdraw" onclick="nav.bottom('withdraw')"><i class="fas fa-wallet"></i> Wallet</div>
     </div>
 
 </div>
@@ -364,7 +284,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // --- 1. FIREBASE CONFIG (INTEGRATED) ---
+    // --- FIREBASE CONFIG (YOUR KEY) ---
     const firebaseConfig = {
         apiKey: "AIzaSyAtfjaSSlaDYUsogHrvBn_6MbEbM-M-O4Q",
         authDomain: "test-g-login-nur.firebaseapp.com",
@@ -375,63 +295,69 @@
         measurementId: "G-QX5D57GRX8"
     };
 
-    // Safe Init
     let db;
     try {
         if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-    } catch(e) { console.error("Firebase Error:", e); alert("Database Connection Failed"); }
+    } catch(e) { console.error(e); }
 
-    // --- 2. GLOBAL STATE ---
+    // --- STATE ---
     let currentUser = null;
-    let settings = {
-        notice: "Welcome to Ring BD - The Future of Mining",
-        gameCost: 20,
-        taskReward: 10,
-        minWithdraw: 500,
-        paymentInfo: "01700000000 (Nagad Personal)"
-    };
+    let settings = { notice: "Welcome", payInfo: "017...", gameCost: 20 };
 
-    // --- 3. NAV CONTROLLER ---
+    // --- NAVIGATION ---
     const nav = {
-        to: (vid) => {
-            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + vid).classList.remove('hidden');
-            if(['login','register','admin','admin-login'].includes(vid)) document.getElementById('main-nav').classList.add('hidden');
+        to: (id) => {
+            document.querySelectorAll('[id^="view-"]').forEach(e => e.classList.add('hidden'));
+            document.getElementById('view-'+id).classList.remove('hidden');
+            if(['login','register','admin','admin-login'].includes(id)) document.getElementById('main-nav').classList.add('hidden');
         },
-        bottom: (vid) => {
-            ['home','games','tasks','wallet'].forEach(v => {
-                document.getElementById('view-'+v).classList.add('hidden');
-                document.getElementById('nav-'+v).classList.remove('active');
+        bottom: (id) => {
+            ['home','game','task','withdraw'].forEach(t => {
+                document.getElementById('view-'+t).classList.add('hidden');
+                document.getElementById('nav-'+t).classList.remove('active');
             });
-            document.getElementById('view-'+vid).classList.remove('hidden');
-            document.getElementById('nav-'+vid).classList.add('active');
+            // If viewing custom game, hide standard game view
+            document.getElementById('view-custom-play').classList.add('hidden');
+            
+            document.getElementById('view-'+id).classList.remove('hidden');
+            document.getElementById('nav-'+id).classList.add('active');
             document.getElementById('main-nav').classList.remove('hidden');
-            // Init canvas if games
-            if(vid === 'games') games.initScratch();
         }
     };
 
-    // --- 4. APP LOGIC ---
+    // --- MAIN APP ---
     const app = {
         init: () => {
-            // Loader timeout
-            setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 2000);
-            // Load settings
-            db.ref('settings').on('value', s => {
-                if(s.exists()) {
-                    settings = s.val();
-                    app.updateUI();
-                }
-            });
+            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2000);
+            db.ref('settings').on('value', s => { if(s.exists()) { settings = s.val(); document.getElementById('site-notice').innerText = settings.notice; } });
             nav.to('login');
         },
 
-        updateUI: () => {
-            document.getElementById('site-marquee').innerText = settings.notice;
-            document.querySelectorAll('.game-cost').forEach(e => e.innerText = settings.gameCost);
-            document.querySelectorAll('.task-reward').forEach(e => e.innerText = settings.taskReward);
-            document.getElementById('min-with').innerText = settings.minWithdraw;
+        // --- MAP FEATURE ---
+        detectLocation: () => {
+            const btn = event.target;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // Update Iframe with Real Location
+                    const mapUrl = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+                    document.getElementById('google-map-frame').src = mapUrl;
+                    document.getElementById('reg-coords').value = `${lat}, ${lon}`;
+                    
+                    btn.innerHTML = '<i class="fas fa-check"></i> Location Set';
+                    btn.className = 'btn btn-primary';
+                }, (error) => {
+                    alert("Please allow location access.");
+                    btn.innerHTML = 'Retry Location';
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
         },
 
         toggleGateway: () => {
@@ -439,293 +365,203 @@
             const info = document.getElementById('gateway-info');
             if(gw) {
                 info.classList.remove('hidden');
-                document.getElementById('display-payment-number').innerText = settings.paymentInfo;
-            } else {
-                info.classList.add('hidden');
-            }
-        },
-
-        copyPay: () => {
-            navigator.clipboard.writeText(settings.paymentInfo);
-            alert("Address Copied!");
-        },
-
-        copyRef: () => {
-            navigator.clipboard.writeText(`https://ring.bd/join?ref=${currentUser.id}`);
-            alert("Referral Link Copied!");
+                document.getElementById('pay-number').innerText = settings.payInfo;
+            } else info.classList.add('hidden');
         },
 
         register: () => {
             const d = {
                 name: document.getElementById('reg-name').value,
-                age: document.getElementById('reg-age').value,
-                mobile: "+880" + document.getElementById('reg-mobile').value,
+                mobile: document.getElementById('reg-mobile').value,
                 email: document.getElementById('reg-email').value,
-                addr: document.getElementById('reg-address').value,
-                pkg: parseInt(document.getElementById('reg-amount').value),
-                gw: document.getElementById('reg-gateway').value,
+                coords: document.getElementById('reg-coords').value || "Not Set",
+                pkg: document.getElementById('reg-amount').value,
                 trx: document.getElementById('reg-trx').value,
-                ts: Date.now(),
-                status: 'pending'
+                status: 'pending',
+                date: Date.now()
             };
-            if(!d.name || !d.mobile || !d.trx) return alert("Missing Fields");
-            if(d.age < 18) return alert("Must be 18+");
+            if(!d.name || !d.mobile || !d.trx) return alert("Fill all fields");
             
-            db.ref('registrations').push(d).then(() => {
-                alert("Application Submitted! Wait for Admin approval.");
-                nav.to('login');
-            });
+            db.ref('registrations').push(d);
+            alert("Request Sent!");
+            nav.to('login');
         },
 
         login: () => {
-            const id = document.getElementById('login-id').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            if(!id || !pass) return alert("Enter Credentials");
-
-            db.ref('users/' + id).once('value', s => {
+            const id = document.getElementById('login-id').value;
+            const pass = document.getElementById('login-pass').value;
+            db.ref('users/'+id).once('value', s => {
                 if(s.exists() && s.val().pass === pass) {
-                    currentUser = s.val();
-                    currentUser.id = id;
-                    app.startSession();
-                } else {
-                    alert("Invalid Wallet ID or Key");
-                }
+                    currentUser = s.val(); currentUser.id = id;
+                    app.loadDashboard();
+                } else alert("Invalid Login");
             });
         },
 
-        startSession: () => {
-            // Listen to live balance
-            db.ref('users/' + currentUser.id).on('value', s => {
-                if(!s.exists()) return;
-                currentUser = s.val();
-                currentUser.id = s.key;
-                
-                // Update Dashboard
-                document.getElementById('u-rc-bal').innerText = currentUser.bal;
-                document.getElementById('u-bdt-est').innerText = (currentUser.bal * 1).toFixed(2); // 1:1 Rate
-                document.getElementById('g-rc-bal').innerText = currentUser.bal;
-                document.getElementById('p-bal').innerText = currentUser.bal;
-                document.getElementById('p-name').innerText = currentUser.name;
-                document.getElementById('p-id').innerText = "ID: " + currentUser.id;
+        loadDashboard: () => {
+            db.ref('users/'+currentUser.id).on('value', s => {
+                currentUser = s.val(); currentUser.id = s.key;
+                document.querySelector('.u-name').innerText = currentUser.name;
+                document.getElementById('u-bal').innerText = currentUser.bal;
+                document.getElementById('w-bal').innerText = currentUser.bal;
+                document.getElementById('u-rc').innerText = currentUser.rc || 0;
             });
+            
+            // Load Custom Games
+            db.ref('customGames').on('value', s => {
+                const list = document.getElementById('dynamic-games-list');
+                // Keep standard wheel, clear others
+                list.innerHTML = `
+                <div class="task-card" style="display:block; text-align:center;" onclick="nav.bottom('game')">
+                    <i class="fas fa-gamepad" style="font-size:2rem; color:var(--primary); margin-bottom:5px;"></i>
+                    <h4>Wheel</h4>
+                </div>`;
+                
+                s.forEach(g => {
+                    const game = g.val();
+                    const key = g.key;
+                    // Create card for custom game
+                    const card = document.createElement('div');
+                    card.className = 'task-card';
+                    card.style.display = 'block';
+                    card.style.textAlign = 'center';
+                    card.innerHTML = `<i class="fas fa-puzzle-piece" style="font-size:2rem; color:#f1c40f; margin-bottom:5px;"></i><h4>${game.name}</h4>`;
+                    card.onclick = () => app.playCustomGame(game.code);
+                    list.appendChild(card);
+                });
+            });
+
             nav.bottom('home');
         },
 
-        doTask: (btn) => {
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mining...';
-            btn.disabled = true;
+        playWheel: () => {
+            if(currentUser.bal < 20) return alert("Low Balance");
+            db.ref('users/'+currentUser.id).update({bal: currentUser.bal - 20});
+            const w = document.getElementById('wheel');
+            w.style.transform = `rotate(${Math.random()*3000}deg)`;
             setTimeout(() => {
-                db.ref('users/' + currentUser.id).update({
-                    bal: currentUser.bal + parseInt(settings.taskReward)
-                });
-                btn.innerHTML = "CLAIMED";
-                btn.style.background = "#333";
+                const win = 30;
+                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + win});
+                alert("Won "+win+" ৳");
+                w.style.transform = 'rotate(0deg)';
             }, 3000);
         },
 
+        playCustomGame: (htmlCode) => {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-custom-play').classList.remove('hidden');
+            // INJECT CODE
+            const container = document.getElementById('custom-game-container');
+            container.innerHTML = htmlCode;
+            
+            // Helper function for custom games to reward user
+            window.claimReward = (amount) => {
+                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + amount});
+                alert("Custom Game Reward: " + amount + "৳ Added!");
+            };
+        },
+
+        doTask: (amt) => {
+            const b = event.target; b.disabled = true; b.innerText = "Wait...";
+            setTimeout(() => {
+                db.ref('users/'+currentUser.id).update({bal: currentUser.bal + amt});
+                alert("Claimed!");
+                b.style.display = 'none';
+            }, 2000);
+        },
+
         withdraw: () => {
-            const amt = parseInt(document.getElementById('w-amount').value);
-            const num = document.getElementById('w-number').value;
-            const mtd = document.getElementById('w-method').value;
-
-            if(amt < settings.minWithdraw) return alert(`Min: ${settings.minWithdraw} RC`);
-            if(amt > currentUser.bal) return alert("Insufficient RC");
-            if(!num) return alert("Enter Wallet Number");
-
-            db.ref('users/' + currentUser.id).update({ bal: currentUser.bal - amt });
+            const amt = parseInt(document.getElementById('w-amt').value);
+            if(amt > currentUser.bal) return alert("Insufficient");
+            db.ref('users/'+currentUser.id).update({bal: currentUser.bal - amt});
             db.ref('withdrawals').push({
-                uid: currentUser.id,
-                name: currentUser.name,
-                amt: amt,
-                mtd: mtd,
-                num: num,
-                status: 'pending'
+                uid: currentUser.id, name: currentUser.name,
+                amt: amt, num: document.getElementById('w-num').value,
+                method: document.getElementById('w-method').value, status: 'pending'
             });
-            alert("Withdraw Request Sent!");
-            nav.bottom('home');
+            alert("Sent!"); nav.bottom('home');
         },
 
-        logout: () => { location.reload(); }
-    };
-
-    // --- 5. GAME LOGIC ---
-    const games = {
-        playWheel: () => {
-            const cost = parseInt(settings.gameCost);
-            if(currentUser.bal < cost) return alert("Need more RC!");
-            
-            db.ref('users/' + currentUser.id).update({ bal: currentUser.bal - cost });
-
-            const wheel = document.getElementById('wheel');
-            const deg = Math.floor(3000 + Math.random() * 3000);
-            wheel.style.transform = `rotate(${deg}deg)`;
-
-            setTimeout(() => {
-                const win = Math.random() > 0.6 ? 40 : 10; // Simple logic
-                db.ref('users/' + currentUser.id).update({ bal: (currentUser.bal - cost) + win });
-                alert(`You Won ${win} RC!`);
-                wheel.style.transition = 'none';
-                wheel.style.transform = 'rotate(0deg)';
-                setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
-            }, 4000);
-        },
-
-        // Coin Flip Logic
-        flipCoin: (choice) => {
-            const bet = 50;
-            if(currentUser.bal < bet) return alert("Need 50 RC to bet!");
-            
-            const coin = document.getElementById('coin');
-            coin.style.animation = 'none';
-            coin.offsetHeight; /* trigger reflow */
-            coin.style.animation = 'flipCoin 2s forwards';
-
-            db.ref('users/' + currentUser.id).update({ bal: currentUser.bal - bet });
-
-            setTimeout(() => {
-                const result = Math.random() < 0.5 ? 'heads' : 'tails';
-                if(choice === result) {
-                    db.ref('users/' + currentUser.id).update({ bal: (currentUser.bal - bet) + 90 });
-                    alert("YOU WON! +90 RC");
-                } else {
-                    alert("You Lost!");
-                }
-                coin.style.animation = 'none';
-            }, 2100);
-        },
-
-        // Scratch Card Logic
-        isScratching: false,
-        initScratch: () => {
-            const cvs = document.getElementById('scratch-canvas');
-            const ctx = cvs.getContext('2d');
-            const parent = document.getElementById('scratch-area');
-            cvs.width = parent.offsetWidth;
-            cvs.height = parent.offsetHeight;
-
-            // Prepare Result
-            const winAmt = Math.random() > 0.7 ? 50 : 5;
-            document.getElementById('scratch-win-amt').innerText = winAmt;
-            document.getElementById('scratch-win-amt').dataset.val = winAmt;
-
-            // Cover
-            ctx.fillStyle = '#C0C0C0'; // Silver
-            ctx.fillRect(0, 0, cvs.width, cvs.height);
-            ctx.fillStyle = '#000';
-            ctx.font = '20px Arial';
-            ctx.fillText("SCRATCH HERE", 60, 80);
-
-            // Events
-            const scratch = (e) => {
-                if(!games.isScratching) return;
-                const rect = cvs.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, 15, 0, Math.PI * 2);
-                ctx.fill();
-            };
-
-            const start = () => {
-                 if(currentUser.bal < settings.gameCost) {
-                     alert("Insufficient RC");
-                     return;
-                 }
-                 if(!games.paidScratch) {
-                     db.ref('users/' + currentUser.id).update({ bal: currentUser.bal - parseInt(settings.gameCost) });
-                     games.paidScratch = true;
-                 }
-                 games.isScratching = true; 
-            };
-            const end = () => { games.isScratching = false; };
-
-            cvs.addEventListener('mousedown', start);
-            cvs.addEventListener('touchstart', start);
-            cvs.addEventListener('mousemove', scratch);
-            cvs.addEventListener('touchmove', scratch);
-            cvs.addEventListener('mouseup', end);
-            cvs.addEventListener('touchend', end);
-        },
-        paidScratch: false,
-        resetScratch: () => {
-            games.paidScratch = false;
-            // Claim previous win if scratched enough? Simple alert here
-            const win = parseInt(document.getElementById('scratch-win-amt').dataset.val);
-            if(games.paidScratch) { // If they paid, give them the money before resetting
-                db.ref('users/' + currentUser.id).update({ bal: currentUser.bal + win }); 
-            }
-            games.initScratch();
+        copyLink: () => {
+            navigator.clipboard.writeText("https://ring.bd/ref/"+currentUser.id);
+            alert("Copied!");
         }
     };
 
-    // --- 6. ADMIN LOGIC ---
+    // --- ADMIN ---
     const admin = {
         login: () => {
-            if(document.getElementById('admin-pass').value === 'admin123') {
-                nav.to('admin');
-                admin.show('req');
-            } else alert("Access Denied");
+            if(document.getElementById('adm-pass').value === 'admin123') {
+                nav.to('admin'); admin.show('req');
+            } else alert("Wrong");
         },
         show: (tab) => {
             const c = document.getElementById('adm-content');
-            c.innerHTML = '<p>Loading...</p>';
-            
+            c.innerHTML = 'Loading...';
             if(tab === 'req') {
                 db.ref('registrations').orderByChild('status').equalTo('pending').on('value', s => {
-                    c.innerHTML = '<h4>Pending Users</h4>';
+                    c.innerHTML = '<h4>Registrations</h4>';
                     s.forEach(x => {
                         const d = x.val();
-                        c.innerHTML += `
-                        <div class="admin-row">
-                            <div><b style="color:white;">${d.name}</b><br><small style="color:gray;">${d.pkg}৳ | ${d.trx}</small></div>
-                            <div>
-                                <button class="btn btn-primary" style="padding:5px 10px; width:auto;" onclick="admin.apr('${x.key}', '${d.name}', '${d.mobile}', ${d.pkg})">✓</button>
-                                <button class="btn btn-danger" style="padding:5px 10px; width:auto;" onclick="admin.del('registrations','${x.key}')">X</button>
-                            </div>
+                        c.innerHTML += `<div class="task-card">
+                            <div><b>${d.name}</b><br><small>${d.pkg} | Trx: ${d.trx}</small><br><small>Loc: ${d.coords}</small></div>
+                            <button class="btn btn-primary" style="width:auto;" onclick="admin.apr('${x.key}','${d.name}','${d.mobile}',${d.pkg})">✓</button>
                         </div>`;
                     });
                 });
             } else if(tab === 'with') {
                 db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', s => {
-                    c.innerHTML = '<h4>Pending Payouts</h4>';
+                    c.innerHTML = '<h4>Withdrawals</h4>';
                     s.forEach(x => {
                         const d = x.val();
-                        c.innerHTML += `
-                        <div class="admin-row">
-                            <div><b style="color:white;">${d.amt} RC</b><br><small style="color:gray;">${d.mtd} - ${d.num}</small></div>
-                            <button class="btn btn-primary" style="padding:5px;" onclick="admin.pay('${x.key}')">Pay</button>
+                        c.innerHTML += `<div class="task-card">
+                            <div><b>${d.amt} ৳</b><br><small>${d.method}: ${d.num}</small></div>
+                            <button class="btn btn-primary" style="width:auto;" onclick="admin.pay('${x.key}')">Pay</button>
                         </div>`;
                     });
                 });
-            } else {
+            } else if(tab === 'game') {
+                // ADMIN CUSTOM GAME BUILDER
                 c.innerHTML = `
-                    <h4>Settings</h4>
-                    <div class="input-group"><label>Marquee</label><input id="s-msg" value="${settings.notice}"></div>
-                    <div class="input-group"><label>Game Cost</label><input id="s-cost" value="${settings.gameCost}"></div>
-                    <div class="input-group"><label>Payment Info</label><input id="s-pay" value="${settings.paymentInfo}"></div>
-                    <button class="btn btn-primary" onclick="admin.save()">Save</button>
+                    <h4>Add Custom Game</h4>
+                    <div class="input-group">
+                        <label>Game Name</label>
+                        <input id="new-g-name" placeholder="Ex: Clicker">
+                    </div>
+                    <div class="input-group">
+                        <label>Game HTML/JS Code</label>
+                        <small>Use 'claimReward(10)' to give money in JS.</small>
+                        <textarea id="new-g-code" class="code-editor" placeholder="<button onclick='claimReward(5)'>Click Me</button>"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="admin.saveGame()">Upload Game</button>
+                    <hr>
+                    <h4>Existing Games</h4>
+                    <div id="adm-game-list"></div>
                 `;
+                db.ref('customGames').on('value', s => {
+                     const l = document.getElementById('adm-game-list'); l.innerHTML = '';
+                     s.forEach(g => {
+                         l.innerHTML += `<div style="background:white; padding:5px; margin:5px 0;">${g.val().name} <button onclick="db.ref('customGames/${g.key}').remove()" style="color:red;">Del</button></div>`;
+                     });
+                });
+            } else {
+                c.innerHTML = `<h4>Settings</h4><input id="s-n" value="${settings.notice}"><input id="s-p" value="${settings.payInfo}"><button class="btn btn-primary" onclick="admin.saveSet()">Save</button>`;
             }
         },
-        apr: (key, name, mob, pkg) => {
-            const uid = "RING" + Math.floor(1000+Math.random()*9000);
-            const pw = Math.random().toString(36).slice(-6);
-            db.ref('users/'+uid).set({ name: name, mobile: mob, pass: pw, bal: 50, pkg: pkg }); // 50 RC Bonus
-            db.ref('registrations/'+key).update({ status: 'approved' });
-            prompt(`User Created!\nCopy & Send to User:\n\nID: ${uid}\nKey: ${pw}`, `${uid} / ${pw}`);
+        apr: (k,n,m,p) => {
+            const uid="RING"+Math.floor(1000+Math.random()*9000), pw=Math.random().toString(36).slice(-5);
+            db.ref('users/'+uid).set({name:n, mobile:m, pass:pw, bal:50, rc:0});
+            db.ref('registrations/'+k).update({status:'approved'});
+            alert(`ID: ${uid}\nPass: ${pw}`);
         },
-        pay: (key) => { db.ref('withdrawals/'+key).update({ status: 'paid' }); },
-        del: (path, key) => { if(confirm('Delete?')) db.ref(path+'/'+key).remove(); },
-        save: () => {
-            db.ref('settings').update({
-                notice: document.getElementById('s-msg').value,
-                gameCost: document.getElementById('s-cost').value,
-                paymentInfo: document.getElementById('s-pay').value
-            });
-            alert("Updated");
-        }
+        pay: (k) => db.ref('withdrawals/'+k).update({status:'paid'}),
+        saveGame: () => {
+            const n = document.getElementById('new-g-name').value;
+            const c = document.getElementById('new-g-code').value;
+            db.ref('customGames').push({name:n, code:c});
+            alert("Game Uploaded!");
+        },
+        saveSet: () => db.ref('settings').update({notice:document.getElementById('s-n').value, payInfo:document.getElementById('s-p').value})
     };
 
     window.onload = app.init;
